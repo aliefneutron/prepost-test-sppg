@@ -363,6 +363,7 @@ const TestPage: React.FC = () => {
 
   if (!isRegistered) {
     return (
+      <>
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8 relative">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-6 uppercase tracking-wide border-b pb-4">
@@ -540,22 +541,7 @@ const TestPage: React.FC = () => {
                 required
               />
             </div>
-            {blockedMessage && (
-              <div className="p-4 bg-red-100 border-2 border-red-200 rounded-lg text-red-700 text-sm font-bold flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🚫</span>
-                  <span>Akses Ditolak</span>
-                </div>
-                <p className="font-normal text-xs">{blockedMessage}</p>
-                <button 
-                  type="button"
-                  onClick={() => setBlockedMessage(null)}
-                  className="mt-2 text-xs bg-red-200 hover:bg-red-300 py-1 px-3 rounded text-red-800 transition"
-                >
-                  Coba dengan data lain
-                </button>
-              </div>
-            )}
+
 
             <div className="pt-4">
               <button
@@ -579,6 +565,28 @@ const TestPage: React.FC = () => {
           </button>
         </div>
       </div>
+      
+      {/* Modal Blocked / Ditolak */}
+      {blockedMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-4xl">🚫</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Akses Ditolak</h2>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              {blockedMessage}
+            </p>
+            <button 
+              onClick={() => setBlockedMessage(null)}
+              className="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-colors shadow-md"
+            >
+              Kembali
+            </button>
+          </div>
+        </div>
+      )}
+    </>
     );
   }
 
