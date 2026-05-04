@@ -90,6 +90,38 @@ const ManageQuestionsPage: React.FC = () => {
         await batch.commit();
     };
 
+    const selectRandomQuestions = async () => {
+        if (questions.length < 10) {
+            alert('Jumlah soal kurang dari 10. Silahkan tambahkan soal terlebih dahulu.');
+            return;
+        }
+        
+        if (!window.confirm('Aksi ini akan menonaktifkan semua soal yang ada dan memilih 10 soal secara acak. Lanjutkan?')) {
+            return;
+        }
+
+        const shuffled = [...questions].sort(() => 0.5 - Math.random());
+        const selectedIds = new Set(shuffled.slice(0, 10).map(q => q.id));
+
+        const batch = writeBatch(db);
+        questions.forEach(q => {
+            const qRef = doc(db, 'questions', q.id);
+            const shouldBeActive = selectedIds.has(q.id);
+            // Only update if the status is changing to save writes
+            if (q.isActive !== shouldBeActive) {
+                batch.update(qRef, { isActive: shouldBeActive });
+            }
+        });
+
+        try {
+            await batch.commit();
+            alert('Berhasil mengaktifkan 10 soal secara acak!');
+        } catch (error) {
+            console.error('Error selecting random questions:', error);
+            alert('Gagal memilih soal secara acak.');
+        }
+    };
+
     const addQuestion = async (e: React.FormEvent) => {
         e.preventDefault();
         if (newQuestion.text.trim() && newQuestion.options.every(opt => opt.trim())) {
@@ -295,8 +327,10 @@ const ManageQuestionsPage: React.FC = () => {
                                 ({questions.filter(q => q.isActive).length} Soal Terpilih untuk Pre/Post Test)
                             </p>
                         </div>
-                        <div className="flex items-center gap-2 text-xs">
+                        <div className="flex flex-wrap items-center gap-2 text-xs">
                             <span className="text-gray-500 font-medium">Status Soal:</span>
+                            <button onClick={selectRandomQuestions} className="bg-purple-100 text-purple-700 px-2 py-1 rounded hover:bg-purple-200 font-bold border border-purple-200">🎲 Pilih 10 Acak</button>
+                            <span className="text-gray-300">|</span>
                             <button onClick={() => bulkToggleActive(true)} className="text-blue-600 hover:underline">Aktifkan Semua</button>
                             <span className="text-gray-300">|</span>
                             <button onClick={() => bulkToggleActive(false)} className="text-gray-600 hover:underline">Nonaktifkan Semua</button>

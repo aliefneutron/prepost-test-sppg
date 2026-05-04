@@ -61,30 +61,39 @@ const TestPage: React.FC = () => {
       return;
     }
 
-    // Cek apakah peserta sudah lulus Post Test sebelumnya
-    if (testType === TestType.POST_TEST) {
-      setIsCheckingEligibility(true);
-      try {
-        const q = query(
-          collection(db, 'scores'),
-          where('ktp', '==', registrationData.ktp.trim()),
-          where('testType', '==', TestType.POST_TEST)
+    setIsCheckingEligibility(true);
+    try {
+      const q = query(
+        collection(db, 'scores'),
+        where('ktp', '==', registrationData.ktp.trim()),
+        where('testType', '==', testType)
+      );
+      const snapshot = await getDocs(q);
+      
+      if (testType === TestType.PRE_TEST && !snapshot.empty) {
+        const data = snapshot.docs[0].data();
+        setBlockedMessage(
+          `Peserta dengan No. KTP ${registrationData.ktp} (${data.name}) sudah pernah mengerjakan Pre-Test. Ujian Pre-Test hanya dapat dilakukan satu kali.`
         );
-        const snapshot = await getDocs(q);
+        setIsCheckingEligibility(false);
+        return;
+      }
+      
+      if (testType === TestType.POST_TEST) {
         const passed = snapshot.docs.find(d => (d.data().score ?? 0) >= 80);
         if (passed) {
           const data = passed.data();
           setBlockedMessage(
-            `Peserta dengan No. KTP ${registrationData.ktp} (${data.name}) sudah LULUS Post Test dengan skor ${data.score}. Tidak dapat mengerjakan Post Test kembali.`
+            `Peserta dengan No. KTP ${registrationData.ktp} (${data.name}) sudah LULUS Post-Test dengan skor ${data.score}. Tidak dapat mengerjakan Post-Test kembali.`
           );
           setIsCheckingEligibility(false);
           return;
         }
-      } catch (err) {
-        console.error('Eligibility check error:', err);
-      } finally {
-        setIsCheckingEligibility(false);
       }
+    } catch (err) {
+      console.error('Eligibility check error:', err);
+    } finally {
+      setIsCheckingEligibility(false);
     }
 
     setIsRegistered(true);

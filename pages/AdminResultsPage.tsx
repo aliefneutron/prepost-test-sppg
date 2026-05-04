@@ -159,23 +159,29 @@ const AdminResultsPage: React.FC = () => {
                     <div className="flex border-b border-gray-200">
                         <button
                             onClick={() => setActiveTab(TestType.PRE_TEST)}
-                            className={`py-2 px-4 font-semibold transition-colors ${
+                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 ${
                                 activeTab === TestType.PRE_TEST
                                     ? 'border-b-2 border-blue-600 text-blue-600'
                                     : 'text-gray-500 hover:text-blue-500'
                             }`}
                         >
                             Pre-Test
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === TestType.PRE_TEST ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                                {scores.filter(s => s.testType === TestType.PRE_TEST).length}
+                            </span>
                         </button>
                         <button
                             onClick={() => setActiveTab(TestType.POST_TEST)}
-                            className={`py-2 px-4 font-semibold transition-colors ${
+                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 ${
                                 activeTab === TestType.POST_TEST
                                     ? 'border-b-2 border-blue-600 text-blue-600'
                                     : 'text-gray-500 hover:text-blue-500'
                             }`}
                         >
                             Post-Test
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === TestType.POST_TEST ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                                {scores.filter(s => s.testType === TestType.POST_TEST && s.score >= 80).length}
+                            </span>
                         </button>
                     </div>
                     
@@ -205,6 +211,9 @@ const AdminResultsPage: React.FC = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none flex-1 min-w-[200px]"
                         />
+                        <div className="text-sm font-bold text-gray-700 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200 whitespace-nowrap">
+                            Total: <span className="text-blue-700">{filteredScores.length}</span> Peserta
+                        </div>
                         <button 
                             onClick={exportPassed}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-1 shadow-sm"
