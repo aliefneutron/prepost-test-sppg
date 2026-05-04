@@ -1,0 +1,379 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { UserScore, TestType } from '../types';
+import AdminLayout from '../components/AdminLayout';
+import { IconTrash, IconEdit, IconX, IconSave } from '../components/icons';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+
+const AdminResultsPage: React.FC = () => {
+    const [scores, setScores] = useState<UserScore[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<TestType>(TestType.PRE_TEST);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split('T')[0]);
+    const [editingScore, setEditingScore] = useState<UserScore | null>(null);
+
+    useEffect(() => {
+        const q = query(collection(db, 'scores'), orderBy('timestamp', 'desc'));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const scoresData: UserScore[] = [];
+            querySnapshot.forEach((doc) => {
+                scoresData.push({ id: doc.id, ...doc.data() } as UserScore);
+            });
+            setScores(scoresData);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const filteredScores = useMemo(() => {
+        return scores
+            .filter(score => score.testType === activeTab)
+            .filter(score => activeTab === TestType.POST_TEST ? score.score >= 80 : true)
+            .filter(score => {
+                if (!filterDate) return true;
+                const d = new Date(score.timestamp);
+                const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                return dateStr === filterDate;
+            })
+            .filter(score => 
+                score.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                score.ktp.includes(searchTerm) ||
+                score.phone.includes(searchTerm) ||
+                score.sppg.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .sort((a, b) => b.timestamp - a.timestamp);
+    }, [scores, activeTab, searchTerm, filterDate]);
+
+    const deleteScore = async (id: string) => {
+        if (window.confirm('Delete this record?')) {
+            try {
+                await deleteDoc(doc(db, 'scores', id));
+            } catch (error) {
+                console.error("Error deleting score: ", error);
+                alert("Failed to delete score.");
+            }
+        }
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editingScore || !editingScore.id) return;
+        try {
+            const docRef = doc(db, 'scores', editingScore.id);
+            await updateDoc(docRef, {
+                name: editingScore.name,
+                ktp: editingScore.ktp,
+                phone: editingScore.phone,
+                birthInfo: editingScore.birthInfo,
+                address: editingScore.address,
+                sppg: editingScore.sppg,
+                score: editingScore.score
+            });
+            setEditingScore(null);
+        } catch (error) {
+            console.error("Error updating score: ", error);
+            alert("Failed to update record.");
+        }
+    };
+
+    const downloadCSV = () => {
+        const headers = ['Name', 'KTP', 'Phone', 'TTL', 'Address', 'SPPG', 'Score', 'Test Type', 'Date'];
+        const rows = filteredScores.map(s => [
+            s.name,
+            s.ktp,
+            s.phone,
+            s.birthInfo || '',
+            s.address.replace(/\n/g, ' '),
+            s.sppg,
+            s.score,
+            s.testType,
+            new Date(s.timestamp).toLocaleString()
+        ]);
+        
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `results_${activeTab}_${filterDate || 'all'}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const exportPassed = () => {
+        let passedScores = scores.filter(s => s.testType === TestType.POST_TEST && s.score >= 80);
+
+        if (filterDate) {
+            passedScores = passedScores.filter(s => {
+                const d = new Date(s.timestamp);
+                const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                return dateStr === filterDate;
+            });
+        }
+
+        if (passedScores.length === 0) {
+            alert(`Tidak ada data peserta lulus untuk tanggal ${filterDate || 'tersebut'}.`);
+            return;
+        }
+
+        const headers = ['Tanggal', 'NIK', 'Nama Lengkap', 'Tempat/Tgl Lahir', 'Alamat Lengkap', 'Nomer HP', 'Nama SPPG', 'Skor', 'Tipe Test'];
+        const rows = passedScores.map(s => [
+            new Date(s.timestamp).toLocaleDateString('id-ID'),
+            s.ktp,
+            s.name,
+            s.birthInfo || '',
+            s.address.replace(/\n/g, ' '),
+            s.phone,
+            s.sppg,
+            s.score,
+            s.testType
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `Lulus_${filterDate || 'Semua_Tanggal'}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    return (
+        <AdminLayout title="Participant Results">
+            <div className="space-y-6">
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+                    <div className="flex border-b border-gray-200">
+                        <button
+                            onClick={() => setActiveTab(TestType.PRE_TEST)}
+                            className={`py-2 px-4 font-semibold transition-colors ${
+                                activeTab === TestType.PRE_TEST
+                                    ? 'border-b-2 border-blue-600 text-blue-600'
+                                    : 'text-gray-500 hover:text-blue-500'
+                            }`}
+                        >
+                            Pre-Test
+                        </button>
+                        <button
+                            onClick={() => setActiveTab(TestType.POST_TEST)}
+                            className={`py-2 px-4 font-semibold transition-colors ${
+                                activeTab === TestType.POST_TEST
+                                    ? 'border-b-2 border-blue-600 text-blue-600'
+                                    : 'text-gray-500 hover:text-blue-500'
+                            }`}
+                        >
+                            Post-Test
+                        </button>
+                    </div>
+                    
+                    <div className="flex w-full md:w-auto gap-2 flex-wrap items-center">
+                        <div className="flex items-center gap-2 bg-white px-2 border border-gray-300 rounded-lg">
+                            <span className="text-gray-500 text-sm">Tanggal:</span>
+                            <input 
+                                type="date" 
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                                className="py-2 focus:outline-none bg-transparent"
+                            />
+                            {filterDate && (
+                                <button 
+                                    onClick={() => setFilterDate('')}
+                                    className="text-gray-400 hover:text-red-500 px-1"
+                                    title="Reset Tanggal"
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
+                        <input 
+                            type="text" 
+                            placeholder="Search name, KTP, or SPPG..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none flex-1 min-w-[200px]"
+                        />
+                        <button 
+                            onClick={exportPassed}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-1 shadow-sm"
+                        >
+                            📅 Export Lulus
+                        </button>
+                        <button 
+                            onClick={downloadCSV}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 flex items-center gap-1 shadow-sm"
+                        >
+                            📄 Export ({activeTab})
+                        </button>
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50 border-b border-gray-200">
+                                    <th className="p-4 text-xs font-bold text-gray-500 uppercase">Participant</th>
+                                    <th className="p-4 text-xs font-bold text-gray-500 uppercase">Details</th>
+                                    <th className="p-4 text-xs font-bold text-gray-500 uppercase">Score</th>
+                                    <th className="p-4 text-xs font-bold text-gray-500 uppercase text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredScores.length > 0 ? filteredScores.map((s) => (
+                                    <tr key={s.id} className="border-b border-gray-100 hover:bg-gray-50">
+                                        <td className="p-4">
+                                            <div className="font-bold text-gray-800">{s.name}</div>
+                                            <div className="text-xs text-gray-500">KTP: {s.ktp}</div>
+                                            <div className="text-xs text-blue-600 font-medium">WA: {s.phone}</div>
+                                        </td>
+                                        <td className="p-4">
+                                            <div className="text-xs"><strong>TTL:</strong> {s.birthInfo || '-'}</div>
+                                            <div className="text-xs"><strong>SPPG:</strong> {s.sppg}</div>
+                                            <div className="text-xs text-gray-500 truncate max-w-xs" title={s.address}>
+                                                <strong>Addr:</strong> {s.address}
+                                            </div>
+                                        </td>
+                                        <td className="p-4">
+                                            <span className={`font-bold px-2 py-1 rounded text-lg ${s.score >= 70 ? 'text-green-600' : 'text-orange-600'}`}>
+                                                {s.score}
+                                            </span>
+                                        </td>
+                                        <td className="p-4 text-right whitespace-nowrap">
+                                            <button 
+                                                onClick={() => setEditingScore(s)}
+                                                className="text-blue-500 hover:text-blue-700 p-2"
+                                                title="Edit"
+                                            >
+                                                <IconEdit className="w-5 h-5"/>
+                                            </button>
+                                            <button 
+                                                onClick={() => deleteScore(s.id!)}
+                                                className="text-red-500 hover:text-red-700 p-2"
+                                                title="Delete"
+                                            >
+                                                <IconTrash className="w-5 h-5"/>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan={4} className="p-8 text-center text-gray-500">No records found.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {editingScore && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center p-4 border-b">
+                            <h2 className="text-xl font-bold">Edit Participant Record</h2>
+                            <button onClick={() => setEditingScore(null)} className="text-gray-500 hover:text-gray-700">
+                                <IconX className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <div className="p-4 space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                    <input 
+                                        type="text" 
+                                        value={editingScore.name} 
+                                        onChange={(e) => setEditingScore({...editingScore, name: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">KTP / NIK</label>
+                                    <input 
+                                        type="text" 
+                                        value={editingScore.ktp} 
+                                        onChange={(e) => setEditingScore({...editingScore, ktp: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone (WA)</label>
+                                    <input 
+                                        type="text" 
+                                        value={editingScore.phone} 
+                                        onChange={(e) => setEditingScore({...editingScore, phone: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">TTL</label>
+                                    <input 
+                                        type="text" 
+                                        value={editingScore.birthInfo || ''} 
+                                        onChange={(e) => setEditingScore({...editingScore, birthInfo: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">SPPG</label>
+                                    <input 
+                                        type="text" 
+                                        value={editingScore.sppg} 
+                                        onChange={(e) => setEditingScore({...editingScore, sppg: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Score</label>
+                                    <input 
+                                        type="number" 
+                                        value={editingScore.score} 
+                                        onChange={(e) => setEditingScore({...editingScore, score: Number(e.target.value)})}
+                                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <textarea 
+                                        value={editingScore.address} 
+                                        onChange={(e) => setEditingScore({...editingScore, address: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                        rows={3}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-4 border-t bg-gray-50 flex justify-end gap-2 rounded-b-lg">
+                            <button 
+                                onClick={() => setEditingScore(null)}
+                                className="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleSaveEdit}
+                                className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold flex items-center gap-2 shadow-sm transition-colors"
+                            >
+                                <IconSave className="w-4 h-4" /> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </AdminLayout>
+    );
+};
+
+export default AdminResultsPage;
