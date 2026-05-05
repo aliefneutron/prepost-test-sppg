@@ -6,6 +6,8 @@ import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 const AdminSettingsPage: React.FC = () => {
   const [googleScriptUrl, setGoogleScriptUrl] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [isPreTestActive, setIsPreTestActive] = useState(true);
+  const [isPostTestActive, setIsPostTestActive] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -16,6 +18,8 @@ const AdminSettingsPage: React.FC = () => {
         const data = docSnap.data();
         setGoogleScriptUrl(data.googleScriptUrl || '');
         setInputValue(data.googleScriptUrl || '');
+        if (data.isPreTestActive !== undefined) setIsPreTestActive(data.isPreTestActive);
+        if (data.isPostTestActive !== undefined) setIsPostTestActive(data.isPostTestActive);
       }
       setLoading(false);
     });
@@ -26,13 +30,34 @@ const AdminSettingsPage: React.FC = () => {
   const handleSave = async () => {
     try {
       await setDoc(doc(db, 'settings', 'global'), {
-        googleScriptUrl: inputValue
+        googleScriptUrl: inputValue,
+        isPreTestActive,
+        isPostTestActive
       }, { merge: true });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
     } catch (error) {
       console.error("Error saving settings: ", error);
       alert("Failed to save settings.");
+    }
+  };
+
+  const toggleTestAccess = async (testType: 'pre' | 'post', currentValue: boolean) => {
+    const newValue = !currentValue;
+    if (testType === 'pre') setIsPreTestActive(newValue);
+    else setIsPostTestActive(newValue);
+    
+    try {
+      const updateData = testType === 'pre' 
+        ? { isPreTestActive: newValue } 
+        : { isPostTestActive: newValue };
+        
+      await setDoc(doc(db, 'settings', 'global'), updateData, { merge: true });
+    } catch (error) {
+      console.error("Error updating test access:", error);
+      // Revert on error
+      if (testType === 'pre') setIsPreTestActive(currentValue);
+      else setIsPostTestActive(currentValue);
     }
   };
 
@@ -62,6 +87,53 @@ const AdminSettingsPage: React.FC = () => {
           >
             {isSaved ? 'Saved!' : 'Save URL'}
           </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Exam Access Control</h2>
+          <p className="text-gray-600 mb-6">
+            Enable or disable access to the Pre-Test and Post-Test menus globally. When disabled, participants cannot start the test.
+          </p>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div>
+                <h3 className="font-semibold text-gray-800">Pre-Test Access</h3>
+                <p className="text-sm text-gray-500">Allow participants to take the Pre-Test</p>
+              </div>
+              <button
+                onClick={() => toggleTestAccess('pre', isPreTestActive)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  isPreTestActive ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    isPreTestActive ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+            
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div>
+                <h3 className="font-semibold text-gray-800">Post-Test Access</h3>
+                <p className="text-sm text-gray-500">Allow participants to take the Post-Test</p>
+              </div>
+              <button
+                onClick={() => toggleTestAccess('post', isPostTestActive)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  isPostTestActive ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    isPostTestActive ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">

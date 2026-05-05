@@ -80,6 +80,22 @@ const TestPage: React.FC = () => {
       }
       
       if (testType === TestType.POST_TEST) {
+        // Check if Pre-Test was completed first
+        const qPreTest = query(
+          collection(db, 'scores'),
+          where('ktp', '==', registrationData.ktp.trim()),
+          where('testType', '==', TestType.PRE_TEST)
+        );
+        const preTestSnapshot = await getDocs(qPreTest);
+        if (preTestSnapshot.empty) {
+          setBlockedMessage(
+            `Peserta dengan No. KTP ${registrationData.ktp} belum mengerjakan Pre-Test. Silahkan kerjakan Pre-Test terlebih dahulu.`
+          );
+          setIsCheckingEligibility(false);
+          return;
+        }
+
+        // Check if they already passed Post-Test
         const passed = snapshot.docs.find(d => (d.data().score ?? 0) >= 80);
         if (passed) {
           const data = passed.data();
@@ -237,7 +253,15 @@ const TestPage: React.FC = () => {
         // Also fetch settings
         const settingsSnap = await getDoc(doc(db, 'settings', 'global'));
         if (settingsSnap.exists()) {
-          setGoogleScriptUrl(settingsSnap.data().googleScriptUrl || '');
+          const data = settingsSnap.data();
+          setGoogleScriptUrl(data.googleScriptUrl || '');
+          
+          if (testType === TestType.PRE_TEST && data.isPreTestActive === false) {
+             throw new Error("Pre-Test saat ini sedang dinonaktifkan oleh Admin.");
+          }
+          if (testType === TestType.POST_TEST && data.isPostTestActive === false) {
+             throw new Error("Post-Test saat ini sedang dinonaktifkan oleh Admin.");
+          }
         }
       } catch (error: any) {
         console.error("Error fetching data: ", error);
