@@ -100,14 +100,14 @@ const TestPage: React.FC = () => {
       
       if (testType === TestType.POST_TEST) {
         // Check if Pre-Test was completed first
-        const preTests = await findTestsByKtp(TestType.PRE_TEST);
-        if (preTests.length === 0) {
-          setBlockedMessage(
-            `Peserta dengan No. KTP ${registrationData.ktp} belum mengerjakan Pre-Test. Silahkan kerjakan Pre-Test terlebih dahulu.`
-          );
-          setIsCheckingEligibility(false);
-          return;
-        }
+        // const preTests = await findTestsByKtp(TestType.PRE_TEST);
+        // if (preTests.length === 0) {
+        //   setBlockedMessage(
+        //     `Peserta dengan No. KTP ${registrationData.ktp} belum mengerjakan Pre-Test. Silahkan kerjakan Pre-Test terlebih dahulu.`
+        //   );
+        //   setIsCheckingEligibility(false);
+        //   return;
+        // }
 
         // Check if they already passed Post-Test
         const postTests = await findTestsByKtp(TestType.POST_TEST);
