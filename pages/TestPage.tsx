@@ -61,33 +61,47 @@ const TestPage: React.FC = () => {
       return;
     }
 
+    const cleanKtp = registrationData.ktp.replace(/\D/g, '');
+    if (!cleanKtp) {
+      alert('No. KTP tidak valid (harus mengandung angka).');
+      return;
+    }
+
     setIsCheckingEligibility(true);
     try {
-      const q = query(
-        collection(db, 'scores'),
-        where('ktp', '==', registrationData.ktp.trim()),
-        where('testType', '==', testType)
-      );
-      const snapshot = await getDocs(q);
-      
-      if (testType === TestType.PRE_TEST && !snapshot.empty) {
-        const data = snapshot.docs[0].data();
-        setBlockedMessage(
-          `Peserta dengan No. KTP ${registrationData.ktp} (${data.name}) sudah pernah mengerjakan Pre-Test. Ujian Pre-Test hanya dapat dilakukan satu kali.`
-        );
-        setIsCheckingEligibility(false);
-        return;
+      const findTestsByKtp = async (type: TestType) => {
+        const qExactClean = query(collection(db, 'scores'), where('ktp', '==', cleanKtp), where('testType', '==', type));
+        const snapExactClean = await getDocs(qExactClean);
+        if (!snapExactClean.empty) return snapExactClean.docs;
+
+        const qExactDirty = query(collection(db, 'scores'), where('ktp', '==', registrationData.ktp.trim()), where('testType', '==', type));
+        const snapExactDirty = await getDocs(qExactDirty);
+        if (!snapExactDirty.empty) return snapExactDirty.docs;
+
+        const qAll = query(collection(db, 'scores'), where('testType', '==', type));
+        const snapAll = await getDocs(qAll);
+        return snapAll.docs.filter(d => {
+          const docKtp = d.data().ktp || '';
+          return docKtp.replace(/\D/g, '') === cleanKtp;
+        });
+      };
+
+      if (testType === TestType.PRE_TEST) {
+        const preTests = await findTestsByKtp(TestType.PRE_TEST);
+        if (preTests.length > 0) {
+          const data = preTests[0].data();
+          setBlockedMessage(
+            `Peserta dengan No. KTP ${registrationData.ktp} (${data.name}) sudah pernah mengerjakan Pre-Test. Ujian Pre-Test hanya dapat dilakukan satu kali.`
+          );
+          setIsCheckingEligibility(false);
+          return;
+        }
       }
       
       if (testType === TestType.POST_TEST) {
         // Check if Pre-Test was completed first
-        const qPreTest = query(
-          collection(db, 'scores'),
-          where('ktp', '==', registrationData.ktp.trim()),
-          where('testType', '==', TestType.PRE_TEST)
-        );
-        const preTestSnapshot = await getDocs(qPreTest);
-        if (preTestSnapshot.empty) {
+        const preTests = await findTestsByKtp(TestType.PRE_TEST);
+        if (preTests.length === 0) {
           setBlockedMessage(
             `Peserta dengan No. KTP ${registrationData.ktp} belum mengerjakan Pre-Test. Silahkan kerjakan Pre-Test terlebih dahulu.`
           );
@@ -96,7 +110,8 @@ const TestPage: React.FC = () => {
         }
 
         // Check if they already passed Post-Test
-        const passed = snapshot.docs.find(d => (d.data().score ?? 0) >= 80);
+        const postTests = await findTestsByKtp(TestType.POST_TEST);
+        const passed = postTests.find(d => (d.data().score ?? 0) >= 80);
         if (passed) {
           const data = passed.data();
           setBlockedMessage(
@@ -112,6 +127,7 @@ const TestPage: React.FC = () => {
       setIsCheckingEligibility(false);
     }
 
+    setRegistrationData(prev => ({ ...prev, ktp: cleanKtp }));
     setIsRegistered(true);
   };
 
