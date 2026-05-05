@@ -8,7 +8,7 @@ import { collection, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } fro
 const AdminResultsPage: React.FC = () => {
     const [scores, setScores] = useState<UserScore[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<TestType>(TestType.PRE_TEST);
+    const [activeTab, setActiveTab] = useState<TestType | 'PENDING_POST_TEST'>(TestType.PRE_TEST);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [editingScore, setEditingScore] = useState<UserScore | null>(null);
@@ -29,7 +29,15 @@ const AdminResultsPage: React.FC = () => {
 
     const filteredScores = useMemo(() => {
         return scores
-            .filter(score => score.testType === activeTab)
+            .filter(score => {
+                if (activeTab === 'PENDING_POST_TEST') {
+                    if (score.testType !== TestType.PRE_TEST) return false;
+                    const cleanKtp = score.ktp.replace(/\D/g, '');
+                    const hasPostTest = scores.some(s => s.testType === TestType.POST_TEST && s.ktp.replace(/\D/g, '') === cleanKtp);
+                    return !hasPostTest;
+                }
+                return score.testType === activeTab;
+            })
             .filter(score => activeTab === TestType.POST_TEST ? score.score >= 80 : true)
             .filter(score => {
                 if (!filterDate) return true;
@@ -156,10 +164,10 @@ const AdminResultsPage: React.FC = () => {
         <AdminLayout title="Participant Results">
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-                    <div className="flex border-b border-gray-200">
+                    <div className="flex border-b border-gray-200 overflow-x-auto">
                         <button
                             onClick={() => setActiveTab(TestType.PRE_TEST)}
-                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 ${
+                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 whitespace-nowrap ${
                                 activeTab === TestType.PRE_TEST
                                     ? 'border-b-2 border-blue-600 text-blue-600'
                                     : 'text-gray-500 hover:text-blue-500'
@@ -172,7 +180,7 @@ const AdminResultsPage: React.FC = () => {
                         </button>
                         <button
                             onClick={() => setActiveTab(TestType.POST_TEST)}
-                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 ${
+                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 whitespace-nowrap ${
                                 activeTab === TestType.POST_TEST
                                     ? 'border-b-2 border-blue-600 text-blue-600'
                                     : 'text-gray-500 hover:text-blue-500'
@@ -181,6 +189,24 @@ const AdminResultsPage: React.FC = () => {
                             Post-Test
                             <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === TestType.POST_TEST ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
                                 {scores.filter(s => s.testType === TestType.POST_TEST && s.score >= 80).length}
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('PENDING_POST_TEST')}
+                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 whitespace-nowrap ${
+                                activeTab === 'PENDING_POST_TEST'
+                                    ? 'border-b-2 border-orange-600 text-orange-600'
+                                    : 'text-gray-500 hover:text-orange-500'
+                            }`}
+                        >
+                            Belum Post-Test
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'PENDING_POST_TEST' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'}`}>
+                                {scores.filter(score => {
+                                    if (score.testType !== TestType.PRE_TEST) return false;
+                                    const cleanKtp = score.ktp.replace(/\D/g, '');
+                                    const hasPostTest = scores.some(s => s.testType === TestType.POST_TEST && s.ktp.replace(/\D/g, '') === cleanKtp);
+                                    return !hasPostTest;
+                                }).length}
                             </span>
                         </button>
                     </div>
