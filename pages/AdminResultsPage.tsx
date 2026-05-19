@@ -110,6 +110,10 @@ const AdminResultsPage: React.FC = () => {
             new Date(s.timestamp).toLocaleString()
         ]);
         
+        // Dynamically name files with SPPG name if all filtered records belong to the same SPPG
+        const uniqueSppgs = Array.from(new Set(filteredScores.map(s => s.sppg.trim())));
+        const sppgSuffix = uniqueSppgs.length === 1 ? `_${uniqueSppgs[0].toLowerCase().replace(/[^a-z0-9_-]/g, '_')}` : '';
+        
         if (exportFormat === 'xlsx') {
             // Excel Export
             const data = filteredScores.map(s => ({
@@ -127,7 +131,7 @@ const AdminResultsPage: React.FC = () => {
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Results');
-            XLSX.writeFile(wb, `results_${activeTab === 'PENDING_POST_TEST' ? 'Belum_Post_Test' : activeTab}_${filterDate || 'all'}.xlsx`);
+            XLSX.writeFile(wb, `results_${activeTab === 'PENDING_POST_TEST' ? 'Belum_Post_Test' : activeTab}${sppgSuffix}_${filterDate || 'all'}.xlsx`);
         } else {
             // CSV Export compatible with Excel (semicolon + BOM)
             const csvContent = [
@@ -140,7 +144,7 @@ const AdminResultsPage: React.FC = () => {
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `results_${activeTab === 'PENDING_POST_TEST' ? 'Belum_Post_Test' : activeTab}_${filterDate || 'all'}.csv`);
+            link.setAttribute('download', `results_${activeTab === 'PENDING_POST_TEST' ? 'Belum_Post_Test' : activeTab}${sppgSuffix}_${filterDate || 'all'}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
@@ -180,6 +184,10 @@ const AdminResultsPage: React.FC = () => {
             s.testType
         ]);
 
+        // Dynamically name files with SPPG name if all filtered records belong to the same SPPG
+        const uniqueSppgs = Array.from(new Set(passedScores.map(s => s.sppg.trim())));
+        const sppgSuffix = uniqueSppgs.length === 1 ? `_${uniqueSppgs[0].toLowerCase().replace(/[^a-z0-9_-]/g, '_')}` : '';
+
         if (exportFormat === 'xlsx') {
             // Excel Export
             const data = passedScores.map(s => ({
@@ -197,7 +205,7 @@ const AdminResultsPage: React.FC = () => {
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Passed Participants');
-            XLSX.writeFile(wb, `Lulus_${filterDate || 'Semua_Tanggal'}.xlsx`);
+            XLSX.writeFile(wb, `Lulus${sppgSuffix}_${filterDate || 'Semua_Tanggal'}.xlsx`);
         } else {
             // CSV Export compatible with Excel (semicolon + BOM)
             const csvContent = [
@@ -210,7 +218,7 @@ const AdminResultsPage: React.FC = () => {
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `Lulus_${filterDate || 'Semua_Tanggal'}.csv`);
+            link.setAttribute('download', `Lulus${sppgSuffix}_${filterDate || 'Semua_Tanggal'}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
