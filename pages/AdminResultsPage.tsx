@@ -4,6 +4,7 @@ import AdminLayout from '../components/AdminLayout';
 import { IconTrash, IconEdit, IconX, IconSave } from '../components/icons';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import * as XLSX from 'xlsx';
 
 const AdminResultsPage: React.FC = () => {
     const [scores, setScores] = useState<UserScore[]>([]);
@@ -14,6 +15,7 @@ const AdminResultsPage: React.FC = () => {
     const [editingScore, setEditingScore] = useState<UserScore | null>(null);
     const [sortBy, setSortBy] = useState<'name' | 'timestamp'>('name');
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const [exportFormat, setExportFormat] = useState<'xlsx' | 'csv'>('xlsx');
 
 
     useEffect(() => {
@@ -108,20 +110,42 @@ const AdminResultsPage: React.FC = () => {
             new Date(s.timestamp).toLocaleString()
         ]);
         
-        const csvContent = [
-            headers.join(','),
-            ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
-        ].join('\n');
-        
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `results_${activeTab}_${filterDate || 'all'}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        if (exportFormat === 'xlsx') {
+            // Excel Export
+            const data = filteredScores.map(s => ({
+                'Name': s.name,
+                'KTP': s.ktp,
+                'Phone': s.phone,
+                'TTL': s.birthInfo || '-',
+                'Address': s.address.replace(/\n/g, ' '),
+                'SPPG': s.sppg,
+                'Score': s.score,
+                'Test Type': s.testType,
+                'Date': new Date(s.timestamp).toLocaleString('id-ID')
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Results');
+            XLSX.writeFile(wb, `results_${activeTab === 'PENDING_POST_TEST' ? 'Belum_Post_Test' : activeTab}_${filterDate || 'all'}.xlsx`);
+        } else {
+            // CSV Export compatible with Excel (semicolon + BOM)
+            const csvContent = [
+                headers.join(';'),
+                ...rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+            ].join('\n');
+            
+            const BOM = '\uFEFF';
+            const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `results_${activeTab === 'PENDING_POST_TEST' ? 'Belum_Post_Test' : activeTab}_${filterDate || 'all'}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     };
 
     const exportPassed = () => {
@@ -156,20 +180,42 @@ const AdminResultsPage: React.FC = () => {
             s.testType
         ]);
 
-        const csvContent = [
-            headers.join(','),
-            ...rows.map(r => r.map(cell => `"${cell}"`).join(','))
-        ].join('\n');
+        if (exportFormat === 'xlsx') {
+            // Excel Export
+            const data = passedScores.map(s => ({
+                'Tanggal': new Date(s.timestamp).toLocaleDateString('id-ID'),
+                'NIK': s.ktp,
+                'Nama Lengkap': s.name,
+                'Tempat/Tgl Lahir': s.birthInfo || '-',
+                'Alamat Lengkap': s.address.replace(/\n/g, ' '),
+                'Nomer HP': s.phone,
+                'Nama SPPG': s.sppg,
+                'Skor': s.score,
+                'Tipe Test': s.testType
+            }));
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `Lulus_${filterDate || 'Semua_Tanggal'}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Passed Participants');
+            XLSX.writeFile(wb, `Lulus_${filterDate || 'Semua_Tanggal'}.xlsx`);
+        } else {
+            // CSV Export compatible with Excel (semicolon + BOM)
+            const csvContent = [
+                headers.join(';'),
+                ...rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+            ].join('\n');
+
+            const BOM = '\uFEFF';
+            const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Lulus_${filterDate || 'Semua_Tanggal'}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     };
 
     return (
@@ -221,20 +267,37 @@ const AdminResultsPage: React.FC = () => {
                     
                     {/* Right side: Summary & Exports */}
                     <div className="flex flex-wrap items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-2 bg-white px-3 py-1.5 border border-gray-300 rounded-lg shrink-0">
+                            <span className="text-gray-500 text-sm font-medium">Format:</span>
+                            <select 
+                                value={exportFormat}
+                                onChange={(e) => setExportFormat(e.target.value as 'xlsx' | 'csv')}
+                                className="focus:outline-none bg-transparent font-bold text-gray-700 cursor-pointer text-sm"
+                            >
+                                <option value="xlsx">📊 Excel (.xlsx)</option>
+                                <option value="csv">📄 CSV (.csv)</option>
+                            </select>
+                        </div>
+
                         <div className="text-sm font-bold text-blue-700 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200 whitespace-nowrap">
                             Total: <span className="text-blue-700">{filteredScores.length}</span> Peserta
                         </div>
+
                         <button 
                             onClick={exportPassed}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-1.5 shadow-sm text-sm transition-all"
                         >
-                            📅 Export Lulus
+                            {exportFormat === 'xlsx' ? '📊 Export Excel Lulus' : '📄 Export CSV Lulus'}
                         </button>
+                        
                         <button 
                             onClick={downloadCSV}
                             className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 flex items-center gap-1.5 shadow-sm text-sm transition-all"
                         >
-                            📄 Export ({activeTab === 'PENDING_POST_TEST' ? 'Belum Post-Test' : activeTab})
+                            {exportFormat === 'xlsx' 
+                                ? `📊 Export Excel (${activeTab === 'PENDING_POST_TEST' ? 'Belum Post-Test' : activeTab})` 
+                                : `📄 Export CSV (${activeTab === 'PENDING_POST_TEST' ? 'Belum Post-Test' : activeTab})`
+                            }
                         </button>
                     </div>
                 </div>
