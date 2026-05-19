@@ -12,6 +12,8 @@ const AdminResultsPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [editingScore, setEditingScore] = useState<UserScore | null>(null);
+    const [sortBy, setSortBy] = useState<'name' | 'timestamp'>('name');
+
 
     useEffect(() => {
         const q = query(collection(db, 'scores'), orderBy('timestamp', 'desc'));
@@ -51,8 +53,13 @@ const AdminResultsPage: React.FC = () => {
                 score.phone.includes(searchTerm) ||
                 score.sppg.toLowerCase().includes(searchTerm.toLowerCase())
             )
-            .sort((a, b) => b.timestamp - a.timestamp);
-    }, [scores, activeTab, searchTerm, filterDate]);
+            .sort((a, b) => {
+                if (sortBy === 'name') {
+                    return a.name.localeCompare(b.name, 'id');
+                }
+                return b.timestamp - a.timestamp;
+            });
+    }, [scores, activeTab, searchTerm, filterDate, sortBy]);
 
     const deleteScore = async (id: string) => {
         if (window.confirm('Delete this record?')) {
@@ -126,6 +133,9 @@ const AdminResultsPage: React.FC = () => {
             });
         }
 
+        // Sort alphabetically
+        passedScores.sort((a, b) => a.name.localeCompare(b.name, 'id'));
+
         if (passedScores.length === 0) {
             alert(`Tidak ada data peserta lulus untuk tanggal ${filterDate || 'tersebut'}.`);
             return;
@@ -163,44 +173,109 @@ const AdminResultsPage: React.FC = () => {
     return (
         <AdminLayout title="Participant Results">
             <div className="space-y-6">
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-                    <div className="flex border-b border-gray-200 overflow-x-auto">
+                {/* Row 1: Filters, Search, and Action Buttons */}
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col xl:flex-row gap-4 justify-between items-stretch xl:items-center">
+                    {/* Left side: Search & Filter Inputs */}
+                    <div className="flex flex-col md:flex-row flex-1 gap-3 items-stretch md:items-center">
+                        <input 
+                            type="text" 
+                            placeholder="Search name, KTP, or SPPG..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none flex-1 min-w-[200px] text-sm"
+                        />
+                        
+                        <div className="flex items-center gap-2 bg-white px-2 border border-gray-300 rounded-lg shrink-0">
+                            <span className="text-gray-500 text-sm">Urutkan:</span>
+                            <select 
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as 'name' | 'timestamp')}
+                                className="py-2 focus:outline-none bg-transparent font-medium text-gray-700 cursor-pointer text-sm"
+                            >
+                                <option value="name">🔤 Abjad (A-Z)</option>
+                                <option value="timestamp">⏱️ Terbaru</option>
+                            </select>
+                        </div>
+
+                        <div className="flex items-center gap-2 bg-white px-2 border border-gray-300 rounded-lg shrink-0">
+                            <span className="text-gray-500 text-sm">Tanggal:</span>
+                            <input 
+                                type="date" 
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                                className="py-2 focus:outline-none bg-transparent text-sm cursor-pointer"
+                            />
+                            {filterDate && (
+                                <button 
+                                    onClick={() => setFilterDate('')}
+                                    className="text-gray-400 hover:text-red-500 px-1 font-bold"
+                                    title="Reset Tanggal"
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Right side: Summary & Exports */}
+                    <div className="flex flex-wrap items-center gap-3 shrink-0">
+                        <div className="text-sm font-bold text-blue-700 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200 whitespace-nowrap">
+                            Total: <span className="text-blue-700">{filteredScores.length}</span> Peserta
+                        </div>
+                        <button 
+                            onClick={exportPassed}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-1.5 shadow-sm text-sm transition-all"
+                        >
+                            📅 Export Lulus
+                        </button>
+                        <button 
+                            onClick={downloadCSV}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 flex items-center gap-1.5 shadow-sm text-sm transition-all"
+                        >
+                            📄 Export ({activeTab === 'PENDING_POST_TEST' ? 'Belum Post-Test' : activeTab})
+                        </button>
+                    </div>
+                </div>
+
+                {/* Row 2: Category Tabs */}
+                <div className="border-b border-gray-200 flex justify-between items-center overflow-x-auto">
+                    <div className="flex space-x-1">
                         <button
                             onClick={() => setActiveTab(TestType.PRE_TEST)}
-                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 whitespace-nowrap ${
+                            className={`py-3 px-6 font-bold transition-all flex items-center gap-2 whitespace-nowrap text-sm border-b-2 ${
                                 activeTab === TestType.PRE_TEST
-                                    ? 'border-b-2 border-blue-600 text-blue-600'
-                                    : 'text-gray-500 hover:text-blue-500'
+                                    ? 'border-blue-600 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-blue-500 hover:border-gray-300'
                             }`}
                         >
-                            Pre-Test
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === TestType.PRE_TEST ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                            📝 Pre-Test
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${activeTab === TestType.PRE_TEST ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
                                 {scores.filter(s => s.testType === TestType.PRE_TEST).length}
                             </span>
                         </button>
                         <button
                             onClick={() => setActiveTab(TestType.POST_TEST)}
-                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 whitespace-nowrap ${
+                            className={`py-3 px-6 font-bold transition-all flex items-center gap-2 whitespace-nowrap text-sm border-b-2 ${
                                 activeTab === TestType.POST_TEST
-                                    ? 'border-b-2 border-blue-600 text-blue-600'
-                                    : 'text-gray-500 hover:text-blue-500'
+                                    ? 'border-green-600 text-green-600 font-bold'
+                                    : 'border-transparent text-gray-500 hover:text-green-500 hover:border-gray-300'
                             }`}
                         >
-                            Post-Test
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === TestType.POST_TEST ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                            🎓 Post-Test
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${activeTab === TestType.POST_TEST ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                                 {scores.filter(s => s.testType === TestType.POST_TEST && s.score >= 80).length}
                             </span>
                         </button>
                         <button
                             onClick={() => setActiveTab('PENDING_POST_TEST')}
-                            className={`py-2 px-4 font-semibold transition-colors flex items-center gap-2 whitespace-nowrap ${
+                            className={`py-3 px-6 font-bold transition-all flex items-center gap-2 whitespace-nowrap text-sm border-b-2 ${
                                 activeTab === 'PENDING_POST_TEST'
-                                    ? 'border-b-2 border-orange-600 text-orange-600'
-                                    : 'text-gray-500 hover:text-orange-500'
+                                    ? 'border-orange-600 text-orange-600 font-bold'
+                                    : 'border-transparent text-gray-500 hover:text-orange-500 hover:border-gray-300'
                             }`}
                         >
-                            Belum Post-Test
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'PENDING_POST_TEST' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'}`}>
+                            ⏳ Belum Post-Test
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${activeTab === 'PENDING_POST_TEST' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'}`}>
                                 {scores.filter(score => {
                                     if (score.testType !== TestType.PRE_TEST) return false;
                                     const cleanKtp = score.ktp.replace(/\D/g, '');
@@ -208,49 +283,6 @@ const AdminResultsPage: React.FC = () => {
                                     return !hasPostTest;
                                 }).length}
                             </span>
-                        </button>
-                    </div>
-                    
-                    <div className="flex w-full md:w-auto gap-2 flex-wrap items-center">
-                        <div className="flex items-center gap-2 bg-white px-2 border border-gray-300 rounded-lg">
-                            <span className="text-gray-500 text-sm">Tanggal:</span>
-                            <input 
-                                type="date" 
-                                value={filterDate}
-                                onChange={(e) => setFilterDate(e.target.value)}
-                                className="py-2 focus:outline-none bg-transparent"
-                            />
-                            {filterDate && (
-                                <button 
-                                    onClick={() => setFilterDate('')}
-                                    className="text-gray-400 hover:text-red-500 px-1"
-                                    title="Reset Tanggal"
-                                >
-                                    ×
-                                </button>
-                            )}
-                        </div>
-                        <input 
-                            type="text" 
-                            placeholder="Search name, KTP, or SPPG..." 
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none flex-1 min-w-[200px]"
-                        />
-                        <div className="text-sm font-bold text-gray-700 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200 whitespace-nowrap">
-                            Total: <span className="text-blue-700">{filteredScores.length}</span> Peserta
-                        </div>
-                        <button 
-                            onClick={exportPassed}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 flex items-center gap-1 shadow-sm"
-                        >
-                            📅 Export Lulus
-                        </button>
-                        <button 
-                            onClick={downloadCSV}
-                            className="bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 flex items-center gap-1 shadow-sm"
-                        >
-                            📄 Export ({activeTab})
                         </button>
                     </div>
                 </div>
