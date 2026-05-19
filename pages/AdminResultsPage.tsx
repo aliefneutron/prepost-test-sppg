@@ -15,7 +15,7 @@ const AdminResultsPage: React.FC = () => {
     const [editingScore, setEditingScore] = useState<UserScore | null>(null);
     const [sortBy, setSortBy] = useState<'name' | 'timestamp'>('name');
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-    const [exportFormat, setExportFormat] = useState<'xlsx' | 'csv'>('xlsx');
+    const [exportFormat, setExportFormat] = useState<'xlsx' | 'csv'>('csv');
 
 
     useEffect(() => {
