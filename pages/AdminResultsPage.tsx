@@ -13,6 +13,7 @@ const AdminResultsPage: React.FC = () => {
     const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [editingScore, setEditingScore] = useState<UserScore | null>(null);
     const [sortBy, setSortBy] = useState<'name' | 'timestamp'>('name');
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
 
     useEffect(() => {
@@ -31,7 +32,7 @@ const AdminResultsPage: React.FC = () => {
 
     const filteredScores = useMemo(() => {
         return scores
-            .filter(score => {
+            .filter((score) => {
                 if (activeTab === 'PENDING_POST_TEST') {
                     if (score.testType !== TestType.PRE_TEST) return false;
                     const cleanKtp = score.ktp.replace(/\D/g, '');
@@ -41,18 +42,20 @@ const AdminResultsPage: React.FC = () => {
                 return score.testType === activeTab;
             })
             .filter(score => activeTab === TestType.POST_TEST ? score.score >= 80 : true)
-            .filter(score => {
-                if (!filterDate) return true;
-                const d = new Date(score.timestamp);
-                const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                return dateStr === filterDate;
+            .filter((score) => {
+                const searchLower = searchTerm.toLowerCase();
+                return (
+                    score.name.toLowerCase().includes(searchLower) ||
+                    score.ktp.includes(searchTerm) ||
+                    score.phone.includes(searchTerm) ||
+                    score.sppg.toLowerCase().includes(searchLower)
+                );
             })
-            .filter(score => 
-                score.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                score.ktp.includes(searchTerm) ||
-                score.phone.includes(searchTerm) ||
-                score.sppg.toLowerCase().includes(searchTerm.toLowerCase())
-            )
+            .filter((score) => {
+                if (!filterDate) return true;
+                const scoreDate = new Date(score.timestamp).toISOString().split('T')[0];
+                return scoreDate === filterDate;
+            })
             .sort((a, b) => {
                 if (sortBy === 'name') {
                     return a.name.localeCompare(b.name, 'id');
@@ -62,13 +65,12 @@ const AdminResultsPage: React.FC = () => {
     }, [scores, activeTab, searchTerm, filterDate, sortBy]);
 
     const deleteScore = async (id: string) => {
-        if (window.confirm('Delete this record?')) {
-            try {
-                await deleteDoc(doc(db, 'scores', id));
-            } catch (error) {
-                console.error("Error deleting score: ", error);
-                alert("Failed to delete score.");
-            }
+        try {
+            await deleteDoc(doc(db, 'scores', id));
+            setConfirmDeleteId(null);
+        } catch (error) {
+            console.error("Error deleting score: ", error);
+            alert("Failed to delete score.");
         }
     };
 
@@ -319,20 +321,40 @@ const AdminResultsPage: React.FC = () => {
                                             </span>
                                         </td>
                                         <td className="p-4 text-right whitespace-nowrap">
-                                            <button 
-                                                onClick={() => setEditingScore(s)}
-                                                className="text-blue-500 hover:text-blue-700 p-2"
-                                                title="Edit"
-                                            >
-                                                <IconEdit className="w-5 h-5"/>
-                                            </button>
-                                            <button 
-                                                onClick={() => deleteScore(s.id!)}
-                                                className="text-red-500 hover:text-red-700 p-2"
-                                                title="Delete"
-                                            >
-                                                <IconTrash className="w-5 h-5"/>
-                                            </button>
+                                            {confirmDeleteId === s.id ? (
+                                                <div className="inline-flex items-center gap-2 bg-red-50 p-1.5 rounded border border-red-200 animate-pulse">
+                                                    <span className="text-xs text-red-600 font-bold px-1">Hapus?</span>
+                                                    <button 
+                                                        onClick={() => deleteScore(s.id)} 
+                                                        className="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 font-bold shadow-sm"
+                                                    >
+                                                        Ya
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setConfirmDeleteId(null)} 
+                                                        className="text-gray-500 text-xs px-2 py-1 rounded hover:bg-gray-200 bg-white border border-gray-200 font-medium"
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <button 
+                                                        onClick={() => setEditingScore(s)}
+                                                        className="text-blue-500 hover:text-blue-700 p-2"
+                                                        title="Edit"
+                                                    >
+                                                        <IconEdit className="w-5 h-5"/>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setConfirmDeleteId(s.id)}
+                                                        className="text-red-500 hover:text-red-700 p-2"
+                                                        title="Delete"
+                                                    >
+                                                        <IconTrash className="w-5 h-5"/>
+                                                    </button>
+                                                </>
+                                            )}
                                         </td>
                                     </tr>
                                 )) : (
