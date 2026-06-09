@@ -8,6 +8,7 @@ import * as XLSX from 'xlsx';
 interface RekapRow {
     sppg: string;
     date: string; // YYYY-MM-DD
+    rawDate: number;
     preTestCount: number;
     postTestCount: number;
 }
@@ -44,6 +45,7 @@ const AdminRekapPage: React.FC = () => {
                 groupedByDate[dateStr] = {
                     sppg: sppgName,
                     date: dateStr,
+                    rawDate: new Date(score.timestamp).setHours(0, 0, 0, 0),
                     preTestCount: 0,
                     postTestCount: 0
                 };
@@ -74,12 +76,8 @@ const AdminRekapPage: React.FC = () => {
             row.sppg.toLowerCase().includes(searchTerm.toLowerCase()) || 
             row.date.includes(searchTerm)
         ).sort((a, b) => {
-             // Sort by SPPG name then by Date
-             const sppgCompare = a.sppg.localeCompare(b.sppg, 'id');
-             if (sppgCompare !== 0) return sppgCompare;
-             
-             // Basic string compare for date (might not be perfectly chronological due to local format, but fine for display)
-             return a.date.localeCompare(b.date, 'id');
+             // Sort by date descending (newest first)
+             return b.rawDate - a.rawDate;
         });
     }, [scores, searchTerm]);
 
