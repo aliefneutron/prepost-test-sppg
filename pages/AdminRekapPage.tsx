@@ -11,47 +11,7 @@ interface RekapRow {
     preTestCount: number;
     postTestCount: number;
 }
-function levenshtein(a: string, b: string): number {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-    for (let j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1,
-                    Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1)
-                );
-            }
-        }
-    }
-    return matrix[b.length][a.length];
-}
-
-function isSimilar(s1: string, s2: string): boolean {
-    const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const a = normalize(s1);
-    const b = normalize(s2);
-    
-    if (a === b) return true;
-    if (a.length > 5 && b.length > 5) {
-        if (a.includes(b) || b.includes(a)) return true;
-    }
-    
-    const dist = levenshtein(a, b);
-    const maxLen = Math.max(a.length, b.length);
-    if (maxLen === 0) return false;
-    
-    return (dist / maxLen) < 0.25;
-}
+// String similarity logic removed, now strictly grouping by Date
 
 const AdminRekapPage: React.FC = () => {
     const [scores, setScores] = useState<UserScore[]>([]);
@@ -74,50 +34,36 @@ const AdminRekapPage: React.FC = () => {
     }, []);
 
     const rekapData = useMemo(() => {
-        const groupedByDate: Record<string, RekapRow[]> = {};
+        const groupedByDate: Record<string, RekapRow> = {};
 
         scores.forEach(score => {
             const dateStr = new Date(score.timestamp).toLocaleDateString('id-ID'); // e.g., "15/8/2023"
             const sppgName = score.sppg ? score.sppg.trim() : 'TIDAK DIKETAHUI';
 
             if (!groupedByDate[dateStr]) {
-                groupedByDate[dateStr] = [];
-            }
-
-            const rowsForDate = groupedByDate[dateStr];
-            let foundMatch = false;
-
-            for (let row of rowsForDate) {
-                if (isSimilar(row.sppg, sppgName)) {
-                    if (score.testType === TestType.PRE_TEST) {
-                        row.preTestCount++;
-                    } else if (score.testType === TestType.POST_TEST) {
-                        row.postTestCount++;
-                    }
-                    
-                    // Keep the most complete name
-                    if (sppgName.length > row.sppg.length) {
-                        row.sppg = sppgName;
-                    }
-                    foundMatch = true;
-                    break;
-                }
-            }
-
-            if (!foundMatch) {
-                rowsForDate.push({
+                groupedByDate[dateStr] = {
                     sppg: sppgName,
                     date: dateStr,
-                    preTestCount: score.testType === TestType.PRE_TEST ? 1 : 0,
-                    postTestCount: score.testType === TestType.POST_TEST ? 1 : 0
-                });
+                    preTestCount: 0,
+                    postTestCount: 0
+                };
+            }
+
+            const row = groupedByDate[dateStr];
+
+            if (score.testType === TestType.PRE_TEST) {
+                row.preTestCount++;
+            } else if (score.testType === TestType.POST_TEST) {
+                row.postTestCount++;
+            }
+            
+            // Keep the most complete name
+            if (sppgName.length > row.sppg.length && sppgName.toUpperCase() !== 'TIDAK DIKETAHUI') {
+                row.sppg = sppgName;
             }
         });
 
-        let allRows: RekapRow[] = [];
-        Object.values(groupedByDate).forEach(rows => {
-            allRows = allRows.concat(rows);
-        });
+        let allRows: RekapRow[] = Object.values(groupedByDate);
 
         // uppercase sppg before returning
         allRows.forEach(r => {
