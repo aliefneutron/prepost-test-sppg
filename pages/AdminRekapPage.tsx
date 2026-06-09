@@ -158,6 +158,12 @@ const AdminRekapPage: React.FC = () => {
                     </div>
                 </div>
 
+                <div className="flex justify-between items-center px-1">
+                    <h2 className="text-lg font-bold text-gray-700">
+                        Total Pelaksanaan Test: <span className="text-blue-600">{rekapData.length}</span> SPPG
+                    </h2>
+                </div>
+
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                     {loading ? (
                         <div className="p-8 text-center text-gray-500">Memuat data...</div>
@@ -166,6 +172,7 @@ const AdminRekapPage: React.FC = () => {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-200">
+                                        <th className="p-4 text-xs font-bold text-gray-500 uppercase w-12 text-center">No</th>
                                         <th className="p-4 text-xs font-bold text-gray-500 uppercase">Nama SPPG</th>
                                         <th className="p-4 text-xs font-bold text-gray-500 uppercase">Tanggal Pelaksanaan</th>
                                         <th className="p-4 text-xs font-bold text-gray-500 uppercase text-center">Peserta Pre Test</th>
@@ -175,6 +182,7 @@ const AdminRekapPage: React.FC = () => {
                                 <tbody>
                                     {rekapData.length > 0 ? rekapData.map((row, idx) => (
                                         <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                                            <td className="p-4 text-center font-bold text-gray-500">{idx + 1}</td>
                                             <td className="p-4 font-bold text-gray-800">{row.sppg}</td>
                                             <td className="p-4 text-gray-600 font-medium">{row.date}</td>
                                             <td className="p-4 text-center">
@@ -190,7 +198,7 @@ const AdminRekapPage: React.FC = () => {
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan={4} className="p-8 text-center text-gray-500">Tidak ada data rekapitulasi.</td>
+                                            <td colSpan={5} className="p-8 text-center text-gray-500">Tidak ada data rekapitulasi.</td>
                                         </tr>
                                     )}
                                 </tbody>
