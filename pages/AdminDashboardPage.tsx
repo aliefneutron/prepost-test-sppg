@@ -21,12 +21,26 @@ const AdminDashboardPage: React.FC = () => {
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">View Results</h3>
                     <p className="text-gray-500">View and export participant data and test scores.</p>
                 </div>
+
+                <div 
+                    onClick={() => navigate('/admin/rekap')}
+                    className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer border-l-4 border-indigo-500">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Rekapitulasi SPPG</h3>
+                    <p className="text-gray-500">Lihat rekap jumlah peserta per SPPG berdasarkan tanggal.</p>
+                </div>
                 
                 <div 
                     onClick={() => navigate('/admin/settings')}
                     className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer border-l-4 border-green-500">
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Settings</h3>
                     <p className="text-gray-500">Configure Google Sheets integration.</p>
+                </div>
+
+                <div 
+                    onClick={() => navigate('/admin/schedules')}
+                    className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer border-l-4 border-orange-500">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Kelola Jadwal</h3>
+                    <p className="text-gray-500">Atur jadwal pelatihan SPPG untuk pilihan dropdown test.</p>
                 </div>
 
                  <div 

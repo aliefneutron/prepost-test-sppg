@@ -11,6 +11,8 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 import ManageQuestionsPage from './pages/ManageQuestionsPage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminResultsPage from './pages/AdminResultsPage';
+import AdminRekapPage from './pages/AdminRekapPage';
+import AdminSchedulesPage from './pages/AdminSchedulesPage';
 
 // Auth Context
 export const AuthContext = React.createContext<{
@@ -35,7 +37,7 @@ function App() {
   const authContextValue = useMemo(() => ({
     isAdmin,
     login: (password: string) => {
-      if (password === ADMIN_PASSWORD) {
+      if (password.trim().toLowerCase() === ADMIN_PASSWORD.toLowerCase()) {
         setIsAdmin(true);
         return true;
       }
@@ -69,6 +71,14 @@ function App() {
           <Route 
             path="/admin/results" 
             element={<AdminRoute><AdminResultsPage /></AdminRoute>} 
+          />
+          <Route 
+            path="/admin/rekap" 
+            element={<AdminRoute><AdminRekapPage /></AdminRoute>} 
+          />
+          <Route 
+            path="/admin/schedules" 
+            element={<AdminRoute><AdminSchedulesPage /></AdminRoute>} 
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

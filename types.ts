@@ -21,6 +21,12 @@ export enum TestType {
   POST_TEST = 'post-test',
 }
 
+export interface Schedule {
+  id: string;
+  sppgName: string;
+  date: string; // YYYY-MM-DD
+}
+
 export interface Question {
   id: string;
   questionText: string;

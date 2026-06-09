@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Question, TestType, UserScore } from '../types';
+import { Question, TestType, UserScore, Schedule } from '../types';
 import { IconCamera, IconScan, IconX, IconUpload } from '../components/icons';
 import { extractKTPData } from '../lib/geminiService';
 import { db } from '../lib/firebase';
@@ -14,6 +14,7 @@ import {
   getDoc
 } from 'firebase/firestore';
 import useLocalStorage from '../hooks/useLocalStorage';
+import { useExamBrowser } from '../hooks/useExamBrowser';
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   return [...array].sort(() => Math.random() - 0.5);
@@ -45,6 +46,7 @@ const TestPage: React.FC = () => {
   const filePickerRef = useRef<HTMLInputElement>(null);
 
   const [testQuestions, setTestQuestions] = useState<Question[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(number | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
@@ -53,6 +55,9 @@ const TestPage: React.FC = () => {
   const [isCheckingEligibility, setIsCheckingEligibility] = useState(false);
   const [blockedMessage, setBlockedMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  const { isBlurred, setIsBlurred, violationCount, resetExamBrowser } = useExamBrowser(isRegistered && !isFinished);
+  const MAX_VIOLATIONS = 3;
 
   const handleRegistrationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -279,6 +284,17 @@ const TestPage: React.FC = () => {
              throw new Error("Post-Test saat ini sedang dinonaktifkan oleh Admin.");
           }
         }
+
+        // Fetch today's schedules
+        const dateObj = new Date();
+        const localDateStr = dateObj.getFullYear() + '-' + String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + String(dateObj.getDate()).padStart(2, '0');
+        const schedQ = query(collection(db, 'schedules'), where('date', '==', localDateStr));
+        const schedSnap = await getDocs(schedQ);
+        const schedData: Schedule[] = [];
+        schedSnap.forEach((doc) => {
+            schedData.push({ id: doc.id, ...doc.data() } as Schedule);
+        });
+        setSchedules(schedData);
       } catch (error: any) {
         console.error("Error fetching data: ", error);
         setFetchError(error.message || "Gagal mengambil data dari server.");
@@ -571,15 +587,24 @@ const TestPage: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Nama SPPG</label>
-              <input
-                type="text"
-                name="sppg"
-                value={registrationData.sppg}
-                onChange={handleRegistrationChange}
-                placeholder="Masukkan nama SPPG"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                required
-              />
+              {schedules.length > 0 ? (
+                <select
+                  name="sppg"
+                  value={registrationData.sppg}
+                  onChange={(e: any) => handleRegistrationChange(e)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                  required
+                >
+                  <option value="" disabled>-- Pilih Jadwal SPPG Hari Ini --</option>
+                  {schedules.map(s => (
+                    <option key={s.id} value={s.sppgName}>{s.sppgName}</option>
+                  ))}
+                </select>
+              ) : (
+                <div className="w-full px-4 py-3 bg-orange-50 border border-orange-200 text-orange-700 rounded-lg text-sm font-medium">
+                  Belum ada jadwal SPPG untuk hari ini. Silakan hubungi Admin.
+                </div>
+              )}
             </div>
 
 
@@ -755,6 +780,61 @@ const TestPage: React.FC = () => {
           </div>
         );
       })()}
+
+      {/* Peringatan Blur / Keluar Aplikasi / Screenshot */}
+      {isBlurred && isRegistered && !isFinished && (
+        <div className="fixed inset-0 bg-red-600 z-[100] flex flex-col items-center justify-center text-white p-6">
+          <div className="text-8xl mb-6">⚠️</div>
+          <h1 className="text-4xl font-bold text-center mb-4">
+            {violationCount >= MAX_VIOLATIONS ? 'UJIAN DIBATALKAN' : 'PERINGATAN UJIAN!'}
+          </h1>
+          <p className="text-xl text-center mb-8 max-w-2xl leading-relaxed">
+            Sistem mendeteksi Anda keluar dari layar ujian, mencoba mengambil screenshot, atau membuka aplikasi lain. 
+            <br/><br/>
+            {violationCount >= MAX_VIOLATIONS ? (
+              <span className="font-bold">Anda telah melanggar aturan sebanyak {MAX_VIOLATIONS} kali. Ujian Anda dihentikan secara otomatis!</span>
+            ) : (
+              <span>Tindakan ini dilarang untuk menjaga integritas ujian. <br/> Peringatan ke-{violationCount} dari {MAX_VIOLATIONS}. Jika mencapai {MAX_VIOLATIONS} kali, ujian akan dihentikan otomatis!</span>
+            )}
+          </p>
+          
+          {violationCount >= MAX_VIOLATIONS ? (
+            <button 
+              onClick={() => {
+                setIsBlurred(false);
+                
+                // Restart ujian dari awal (isi form data diri)
+                setIsFinished(false);
+                setCurrentQuestionIndex(0);
+                const shuffled = [...testQuestions].sort(() => Math.random() - 0.5);
+                setTestQuestions(shuffled);
+                setUserAnswers(new Array(shuffled.length).fill(null));
+                
+                setIsRegistered(false);
+                setRegistrationData({
+                  name: '',
+                  ktp: '',
+                  phone: '',
+                  address: '',
+                  birthInfo: '',
+                  sppg: ''
+                });
+                resetExamBrowser();
+              }}
+              className="bg-white text-red-600 font-bold py-4 px-10 rounded-xl hover:bg-gray-100 transition shadow-2xl text-lg"
+            >
+              Mulai Ulang Ujian
+            </button>
+          ) : (
+            <button 
+              onClick={() => setIsBlurred(false)}
+              className="bg-white text-red-600 font-bold py-4 px-10 rounded-xl hover:bg-gray-100 transition shadow-2xl text-lg"
+            >
+              Saya Mengerti, Kembali ke Ujian
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };
