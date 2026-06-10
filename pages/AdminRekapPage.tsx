@@ -78,7 +78,7 @@ const AdminRekapPage: React.FC = () => {
                 displayDateStr = `${parseInt(day)}/${parseInt(m)}/${y}`;
             }
 
-            const groupKey = `${displayDateStr}_${sppgName}`;
+            const groupKey = displayDateStr;
 
             if (!groupedData[groupKey]) {
                 groupedData[groupKey] = {
@@ -97,9 +97,19 @@ const AdminRekapPage: React.FC = () => {
             } else if (score.testType === TestType.POST_TEST) {
                 row.postTestCount++;
             }
+            
+            // Keep the most complete name
+            if (sppgName.length > row.sppg.length && sppgName.toUpperCase() !== 'TIDAK DIKETAHUI') {
+                row.sppg = sppgName;
+            }
         });
 
         let allRows: RekapRow[] = Object.values(groupedData);
+
+        // uppercase sppg before returning
+        allRows.forEach(r => {
+            r.sppg = r.sppg.toUpperCase();
+        });
 
         return allRows.filter(row => 
             row.sppg.includes(searchTerm.toUpperCase()) || 
