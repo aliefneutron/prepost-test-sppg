@@ -35,47 +35,45 @@ const AdminRekapPage: React.FC = () => {
     }, []);
 
     const rekapData = useMemo(() => {
-        const groupedBySppg: Record<string, RekapRow & { _dates: Set<string>, minTimestamp: number }> = {};
+        const groupedByDate: Record<string, RekapRow> = {};
 
         scores.forEach(score => {
             const dateStr = new Date(score.timestamp).toLocaleDateString('id-ID'); // e.g., "15/8/2023"
-            const sppgName = score.sppg ? score.sppg.trim().toUpperCase() : 'TIDAK DIKETAHUI';
+            const sppgName = score.sppg ? score.sppg.trim() : 'TIDAK DIKETAHUI';
 
-            if (!groupedBySppg[sppgName]) {
-                groupedBySppg[sppgName] = {
+            if (!groupedByDate[dateStr]) {
+                groupedByDate[dateStr] = {
                     sppg: sppgName,
-                    date: dateStr, // placeholder, will be updated
+                    date: dateStr,
                     rawDate: new Date(score.timestamp).setHours(0, 0, 0, 0),
                     preTestCount: 0,
-                    postTestCount: 0,
-                    _dates: new Set([dateStr]),
-                    minTimestamp: score.timestamp
+                    postTestCount: 0
                 };
-            } else {
-                groupedBySppg[sppgName]._dates.add(dateStr);
-                // Keep the earliest timestamp as the official "event date"
-                if (score.timestamp < groupedBySppg[sppgName].minTimestamp) {
-                    groupedBySppg[sppgName].minTimestamp = score.timestamp;
-                    groupedBySppg[sppgName].rawDate = new Date(score.timestamp).setHours(0, 0, 0, 0);
-                }
             }
 
-            const row = groupedBySppg[sppgName];
+            const row = groupedByDate[dateStr];
 
             if (score.testType === TestType.PRE_TEST) {
                 row.preTestCount++;
             } else if (score.testType === TestType.POST_TEST) {
                 row.postTestCount++;
             }
+            
+            // Keep the most complete name
+            if (sppgName.length > row.sppg.length && sppgName.toUpperCase() !== 'TIDAK DIKETAHUI') {
+                row.sppg = sppgName;
+            }
         });
 
-        let allRows: RekapRow[] = Object.values(groupedBySppg).map(row => ({
-            ...row,
-            date: new Date(row.minTimestamp).toLocaleDateString('id-ID')
-        }));
+        let allRows: RekapRow[] = Object.values(groupedByDate);
+
+        // uppercase sppg before returning
+        allRows.forEach(r => {
+            r.sppg = r.sppg.toUpperCase();
+        });
 
         return allRows.filter(row => 
-            row.sppg.includes(searchTerm.toUpperCase()) || 
+            row.sppg.toLowerCase().includes(searchTerm.toLowerCase()) || 
             row.date.includes(searchTerm)
         ).sort((a, b) => {
              // Sort by date descending (newest first)
