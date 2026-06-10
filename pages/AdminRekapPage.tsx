@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { UserScore, TestType } from '../types';
 import AdminLayout from '../components/AdminLayout';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, getDocs } from 'firebase/firestore';
 import * as XLSX from 'xlsx';
 
 interface RekapRow {
@@ -20,7 +20,17 @@ const AdminRekapPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [exportFormat, setExportFormat] = useState<'xlsx' | 'csv'>('xlsx');
 
+    const [schedules, setSchedules] = useState<any[]>([]);
+
     useEffect(() => {
+        const fetchSchedules = async () => {
+            const snap = await getDocs(collection(db, 'schedules'));
+            const scheds: any[] = [];
+            snap.forEach(doc => scheds.push(doc.data()));
+            setSchedules(scheds);
+        };
+        fetchSchedules();
+
         const q = query(collection(db, 'scores'), orderBy('timestamp', 'desc'));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const scoresData: UserScore[] = [];
@@ -37,17 +47,44 @@ const AdminRekapPage: React.FC = () => {
     const rekapData = useMemo(() => {
         const groupedData: Record<string, RekapRow> = {};
 
-        scores.forEach(score => {
-            const dateStr = new Date(score.timestamp).toLocaleDateString('id-ID'); // e.g., "15/8/2023"
-            const sppgName = score.sppg ? score.sppg.trim().toUpperCase() : 'TIDAK DIKETAHUI';
+        // Build a map of SPPG Name -> Official Date (YYYY-MM-DD)
+        const sppgToDate: Record<string, string> = {};
+        schedules.forEach(sched => {
+            if (sched.sppgName && sched.date) {
+                sppgToDate[sched.sppgName.toUpperCase().trim()] = sched.date;
+            }
+        });
 
-            const groupKey = `${dateStr}_${sppgName}`;
+        scores.forEach(score => {
+            const sppgName = score.sppg ? score.sppg.trim().toUpperCase() : 'TIDAK DIKETAHUI';
+            
+            // Get the local date of the submission in YYYY-MM-DD
+            const d = new Date(score.timestamp);
+            const scoreDateYMD = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            const scoreDateDisplay = d.toLocaleDateString('id-ID');
+
+            // Find official date
+            const officialDateYMD = sppgToDate[sppgName];
+            
+            // If we have an official date, and the submission is strictly AFTER it, skip it!
+            if (officialDateYMD && scoreDateYMD > officialDateYMD) {
+                return; // SKIP late submissions
+            }
+
+            // For display, if we have an official date, convert it to DD/MM/YYYY format
+            let displayDateStr = scoreDateDisplay;
+            if (officialDateYMD) {
+                const [y, m, day] = officialDateYMD.split('-');
+                displayDateStr = `${parseInt(day)}/${parseInt(m)}/${y}`;
+            }
+
+            const groupKey = `${displayDateStr}_${sppgName}`;
 
             if (!groupedData[groupKey]) {
                 groupedData[groupKey] = {
                     sppg: sppgName,
-                    date: dateStr,
-                    rawDate: new Date(score.timestamp).setHours(0, 0, 0, 0),
+                    date: displayDateStr,
+                    rawDate: officialDateYMD ? new Date(officialDateYMD).getTime() : new Date(score.timestamp).setHours(0, 0, 0, 0),
                     preTestCount: 0,
                     postTestCount: 0
                 };
