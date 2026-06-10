@@ -35,14 +35,16 @@ const AdminRekapPage: React.FC = () => {
     }, []);
 
     const rekapData = useMemo(() => {
-        const groupedByDate: Record<string, RekapRow> = {};
+        const groupedData: Record<string, RekapRow> = {};
 
         scores.forEach(score => {
             const dateStr = new Date(score.timestamp).toLocaleDateString('id-ID'); // e.g., "15/8/2023"
-            const sppgName = score.sppg ? score.sppg.trim() : 'TIDAK DIKETAHUI';
+            const sppgName = score.sppg ? score.sppg.trim().toUpperCase() : 'TIDAK DIKETAHUI';
 
-            if (!groupedByDate[dateStr]) {
-                groupedByDate[dateStr] = {
+            const groupKey = `${dateStr}_${sppgName}`;
+
+            if (!groupedData[groupKey]) {
+                groupedData[groupKey] = {
                     sppg: sppgName,
                     date: dateStr,
                     rawDate: new Date(score.timestamp).setHours(0, 0, 0, 0),
@@ -51,29 +53,19 @@ const AdminRekapPage: React.FC = () => {
                 };
             }
 
-            const row = groupedByDate[dateStr];
+            const row = groupedData[groupKey];
 
             if (score.testType === TestType.PRE_TEST) {
                 row.preTestCount++;
             } else if (score.testType === TestType.POST_TEST) {
                 row.postTestCount++;
             }
-            
-            // Keep the most complete name
-            if (sppgName.length > row.sppg.length && sppgName.toUpperCase() !== 'TIDAK DIKETAHUI') {
-                row.sppg = sppgName;
-            }
         });
 
-        let allRows: RekapRow[] = Object.values(groupedByDate);
-
-        // uppercase sppg before returning
-        allRows.forEach(r => {
-            r.sppg = r.sppg.toUpperCase();
-        });
+        let allRows: RekapRow[] = Object.values(groupedData);
 
         return allRows.filter(row => 
-            row.sppg.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            row.sppg.includes(searchTerm.toUpperCase()) || 
             row.date.includes(searchTerm)
         ).sort((a, b) => {
              // Sort by date descending (newest first)
