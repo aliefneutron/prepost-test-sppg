@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { doc, onSnapshot, setDoc, updateDoc, getDoc, collection } from "firebase/firestore";
-import { signInAnonymously } from "firebase/auth";
-import { db, auth } from "../../lib/firebase";
+import { db } from "../../lib/firebase";
 import { AreaKey } from "./data";
 import { nanoid } from "nanoid";
 
@@ -64,19 +63,11 @@ export function useFirebaseSession() {
   const [data, setData] = useState<InspectionData>(defaultData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthed, setIsAuthed] = useState(false);
+  const [isAuthed, setIsAuthed] = useState(true);
 
-  // Initialize Anonymous Auth
+  // Auth is bypassed because the main project doesn't require Firebase Auth
   useEffect(() => {
-    signInAnonymously(auth)
-      .then(() => {
-        setIsAuthed(true);
-        console.log("Authenticated anonymously");
-      })
-      .catch((err) => {
-        console.error("Auth Error:", err);
-        setError("Gagal menginisialisasi sesi aman.");
-      });
+    setIsAuthed(true);
   }, []);
 
   // Sync to local storage
