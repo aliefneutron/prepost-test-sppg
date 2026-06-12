@@ -504,20 +504,6 @@ export default function App() {
                           <div className="flex items-start justify-between gap-4">
                             <p className="text-sm font-medium leading-relaxed">{item.text}</p>
                             <div className="flex shrink-0 gap-2">
-                              {iklPhotos[item.id]?.length > 0 && (
-                                <div className="flex gap-2">
-                                  {iklPhotos[item.id].map((base64, i) => (
-                                    <button 
-                                      key={i} 
-                                      onClick={() => setViewingPhoto({ criteriaId: item.id, index: i })}
-                                      className="w-9 h-9 rounded-lg border border-gray-200 overflow-hidden cursor-pointer hover:ring-2 hover:ring-orange-500 transition-all p-0 focus:outline-none"
-                                      title="Review Foto"
-                                    >
-                                      <img src={base64} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
                               <label className="p-2 bg-gray-50 text-gray-400 hover:bg-orange-50 hover:text-orange-500 rounded-lg cursor-pointer transition-colors shadow-sm border border-gray-100">
                                 <Camera size={16} />
                                 <input 
@@ -533,6 +519,21 @@ export default function App() {
                               </label>
                             </div>
                           </div>
+                          
+                          {iklPhotos[item.id]?.length > 0 && (
+                            <div className="flex gap-3 mt-3">
+                              {iklPhotos[item.id].map((base64, i) => (
+                                <button 
+                                  key={i} 
+                                  onClick={() => setViewingPhoto({ criteriaId: item.id, index: i })}
+                                  className="w-14 h-14 rounded-xl border border-gray-200 overflow-hidden cursor-pointer hover:ring-2 hover:ring-orange-500 transition-all p-0 focus:outline-none shadow-sm"
+                                  title="Review Foto"
+                                >
+                                  <img src={base64} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                       
