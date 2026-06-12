@@ -5,19 +5,36 @@ import { IconTrash, IconEdit, IconX, IconSave } from '../components/icons';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import * as XLSX from 'xlsx';
+import { useLocation } from 'react-router-dom';
 
 const AdminResultsPage: React.FC = () => {
+    const location = useLocation();
+    
+    const queryParams = new URLSearchParams(location.search);
+    const initialSppg = queryParams.get('sppg') || '';
+    const initialDate = queryParams.get('date') !== null ? queryParams.get('date')! : (() => {
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    })();
+
     const [scores, setScores] = useState<UserScore[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<TestType | 'PENDING_POST_TEST'>(TestType.PRE_TEST);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterDate, setFilterDate] = useState<string>(new Date().toISOString().split('T')[0]);
+    const [searchTerm, setSearchTerm] = useState(initialSppg);
+    const [filterDate, setFilterDate] = useState<string>(initialDate);
     const [editingScore, setEditingScore] = useState<UserScore | null>(null);
     const [sortBy, setSortBy] = useState<'name' | 'timestamp'>('name');
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [exportFormat, setExportFormat] = useState<'xlsx' | 'csv'>('csv');
 
-
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const sppgParam = params.get('sppg');
+        const dateParam = params.get('date');
+        
+        if (sppgParam !== null) setSearchTerm(sppgParam);
+        if (dateParam !== null) setFilterDate(dateParam);
+    }, [location.search]);
     useEffect(() => {
         const q = query(collection(db, 'scores'), orderBy('timestamp', 'desc'));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -55,8 +72,9 @@ const AdminResultsPage: React.FC = () => {
             })
             .filter((score) => {
                 if (!filterDate) return true;
-                const scoreDate = new Date(score.timestamp).toISOString().split('T')[0];
-                return scoreDate === filterDate;
+                const d = new Date(score.timestamp);
+                const scoreDateYMD = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                return scoreDateYMD === filterDate;
             })
             .sort((a, b) => {
                 if (sortBy === 'name') {

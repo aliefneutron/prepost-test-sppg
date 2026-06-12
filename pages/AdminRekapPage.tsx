@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserScore, TestType } from '../types';
 import AdminLayout from '../components/AdminLayout';
 import { db } from '../lib/firebase';
@@ -7,14 +8,16 @@ import * as XLSX from 'xlsx';
 
 interface RekapRow {
     sppg: string;
-    date: string; // YYYY-MM-DD
+    date: string; // Display format
     rawDate: number;
+    filterDateYMD: string; // YYYY-MM-DD for URL params
     preTestCount: number;
     postTestCount: number;
 }
 // String similarity logic removed, now strictly grouping by Date
 
 const AdminRekapPage: React.FC = () => {
+    const navigate = useNavigate();
     const [scores, setScores] = useState<UserScore[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -78,13 +81,14 @@ const AdminRekapPage: React.FC = () => {
                 displayDateStr = `${parseInt(day)}/${parseInt(m)}/${y}`;
             }
 
-            const groupKey = displayDateStr;
+            const groupKey = `${displayDateStr}_${sppgName}`;
 
             if (!groupedData[groupKey]) {
                 groupedData[groupKey] = {
                     sppg: sppgName,
                     date: displayDateStr,
                     rawDate: officialDateYMD ? new Date(officialDateYMD).getTime() : new Date(score.timestamp).setHours(0, 0, 0, 0),
+                    filterDateYMD: officialDateYMD || scoreDateYMD,
                     preTestCount: 0,
                     postTestCount: 0
                 };
@@ -97,19 +101,9 @@ const AdminRekapPage: React.FC = () => {
             } else if (score.testType === TestType.POST_TEST) {
                 row.postTestCount++;
             }
-            
-            // Keep the most complete name
-            if (sppgName.length > row.sppg.length && sppgName.toUpperCase() !== 'TIDAK DIKETAHUI') {
-                row.sppg = sppgName;
-            }
         });
 
         let allRows: RekapRow[] = Object.values(groupedData);
-
-        // uppercase sppg before returning
-        allRows.forEach(r => {
-            r.sppg = r.sppg.toUpperCase();
-        });
 
         return allRows.filter(row => 
             row.sppg.includes(searchTerm.toUpperCase()) || 
@@ -220,7 +214,13 @@ const AdminRekapPage: React.FC = () => {
                                 </thead>
                                 <tbody>
                                     {rekapData.length > 0 ? rekapData.map((row, idx) => (
-                                        <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                                        <tr 
+                                            key={idx} 
+                                            className="border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors"
+                                            onClick={() => {
+                                                navigate(`/admin/results?sppg=${encodeURIComponent(row.sppg)}&date=${encodeURIComponent(row.filterDateYMD)}`);
+                                            }}
+                                        >
                                             <td className="p-4 text-center font-bold text-gray-500">{idx + 1}</td>
                                             <td className="p-4 font-bold text-gray-800">{row.sppg}</td>
                                             <td className="p-4 text-gray-600 font-medium">{row.date}</td>
@@ -251,3 +251,4 @@ const AdminRekapPage: React.FC = () => {
 };
 
 export default AdminRekapPage;
+                                                                                                                                                                                                                                                                                                                                           
