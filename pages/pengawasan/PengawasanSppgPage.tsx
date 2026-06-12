@@ -171,10 +171,11 @@ function AreaSelector({ onSelect, claimed, deviceId }: any) {
 export default function App() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [viewingPhoto, setViewingPhoto] = useState<{criteriaId: string, index: number} | null>(null);
   const {
     deviceId, sessionId, assignedAreas, claimAreas, data, loading, error, setError,
     createSession, joinSession, leaveSession, setInfo, setSpecialAnswers,
-    setCatatan, setIklSuggestions, toggleIkl, uploadPhoto
+    setCatatan, setIklSuggestions, toggleIkl, uploadPhoto, deletePhoto
   } = useFirebaseSession();
   
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -504,11 +505,16 @@ export default function App() {
                             <p className="text-sm font-medium leading-relaxed">{item.text}</p>
                             <div className="flex shrink-0 gap-2">
                               {iklPhotos[item.id]?.length > 0 && (
-                                <div className="flex -space-x-2">
-                                  {iklPhotos[item.id].map((_, i) => (
-                                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-green-500 flex items-center justify-center text-[8px] text-white font-bold">
-                                      {i + 1}
-                                    </div>
+                                <div className="flex gap-2">
+                                  {iklPhotos[item.id].map((base64, i) => (
+                                    <button 
+                                      key={i} 
+                                      onClick={() => setViewingPhoto({ criteriaId: item.id, index: i })}
+                                      className="w-9 h-9 rounded-lg border border-gray-200 overflow-hidden cursor-pointer hover:ring-2 hover:ring-orange-500 transition-all p-0 focus:outline-none"
+                                      title="Review Foto"
+                                    >
+                                      <img src={base64} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                                    </button>
                                   ))}
                                 </div>
                               )}
@@ -856,6 +862,52 @@ export default function App() {
             )}
           </AnimatePresence>
         </section>
+
+      {/* Photo Viewer Modal */}
+      <AnimatePresence>
+        {viewingPhoto && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl overflow-hidden max-w-2xl w-full flex flex-col shadow-2xl"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                <h3 className="font-bold text-gray-800">Review Foto</h3>
+                <button 
+                  onClick={() => setViewingPhoto(null)}
+                  className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-4 bg-gray-900 flex justify-center items-center min-h-[300px] max-h-[60vh] overflow-hidden">
+                <img 
+                  src={iklPhotos[viewingPhoto.criteriaId]?.[viewingPhoto.index]} 
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-sm" 
+                  alt="Review" 
+                />
+              </div>
+              <div className="p-4 flex justify-between items-center border-t border-gray-100 bg-white">
+                <p className="text-xs text-gray-500 font-medium">Foto {viewingPhoto.index + 1} dari {iklPhotos[viewingPhoto.criteriaId]?.length || 1}</p>
+                <button 
+                  onClick={() => {
+                    const base64 = iklPhotos[viewingPhoto.criteriaId]?.[viewingPhoto.index];
+                    if (base64 && confirm("Apakah Anda yakin ingin menghapus foto ini?")) {
+                      deletePhoto(viewingPhoto.criteriaId, base64);
+                      setViewingPhoto(null);
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-bold text-sm"
+                >
+                  <Trash2 size={16} /> Hapus
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
         {/* Footer Navigation */}
         <div className="mt-8 flex justify-between items-center gap-4 print:hidden">
