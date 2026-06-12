@@ -35,6 +35,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { AREAS, IKL_DATA, SPECIAL_REQUIREMENTS, AreaKey } from "./data";
 import { useFirebaseSession } from "./firebaseHooks";
 import { exportToWord, exportToExcel } from "./exportUtils";
+import { useNavigate } from "react-router-dom";
 
 // --- Types ---
 interface SPPGInfo {
@@ -53,10 +54,16 @@ type IKLAnswer = Record<string, AreaKey[]>; // CriteriaID -> Array of selected n
 
 
 
-function Lobby({ onJoin, onCreate, error, loading, setError }: any) {
+function Lobby({ onJoin, onCreate, error, loading, setError, onBack }: any) {
   const [code, setCode] = useState("");
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center p-4 text-[#1a1a1a] font-sans">
+    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center p-4 text-[#1a1a1a] font-sans relative">
+      <button 
+        onClick={onBack} 
+        className="absolute top-6 left-6 p-2.5 text-gray-600 hover:bg-white hover:shadow-md rounded-xl flex items-center gap-2 transition-all font-bold text-sm bg-gray-100 border border-gray-200"
+      >
+        <ChevronLeft size={18} /> Kembali ke Dashboard
+      </button>
       <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] w-full max-w-md border border-[#e5e5e5]">
         <div className="flex justify-center mb-6">
           <div className="bg-orange-500 p-4 rounded-2xl text-white shadow-lg shadow-orange-500/20">
@@ -162,6 +169,7 @@ function AreaSelector({ onSelect, claimed, deviceId }: any) {
 }
 
 export default function App() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const {
     deviceId, sessionId, assignedAreas, claimAreas, data, loading, error, setError,
@@ -241,7 +249,7 @@ export default function App() {
     reader.readAsDataURL(file);
   };
 
-  if (!sessionId) return <Lobby onJoin={joinSession} onCreate={createSession} error={error} loading={loading} setError={setError} />;
+  if (!sessionId) return <Lobby onJoin={joinSession} onCreate={createSession} error={error} loading={loading} setError={setError} onBack={() => navigate('/admin/dashboard')} />;
   if (assignedAreas.length === 0) return <AreaSelector onSelect={claimAreas} claimed={data.claimedAreas} deviceId={deviceId} />;
 
   return (
