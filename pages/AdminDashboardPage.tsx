@@ -43,6 +43,13 @@ const AdminDashboardPage: React.FC = () => {
                     <p className="text-gray-500">Atur jadwal pelatihan SPPG untuk pilihan dropdown test.</p>
                 </div>
 
+                <div 
+                    onClick={() => navigate('/admin/pengawasan')}
+                    className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer border-l-4 border-teal-500">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">Pengawasan SPPG</h3>
+                    <p className="text-gray-500">Aplikasi inspeksi kesehatan lingkungan SPPG kolaboratif.</p>
+                </div>
+
                  <div 
                     onClick={() => navigate('/')}
                     className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer border-l-4 border-purple-500">

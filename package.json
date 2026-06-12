@@ -13,15 +13,22 @@
   },
   "dependencies": {
     "@google/genai": "^1.50.1",
+    "@tailwindcss/vite": "^4.3.0",
+    "file-saver": "^2.0.5",
     "firebase": "^12.12.1",
+    "lucide-react": "^1.17.0",
+    "motion": "^12.40.0",
+    "nanoid": "^5.1.11",
     "papaparse": "^5.5.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.4",
+    "tailwindcss": "^4.3.0",
     "tesseract.js": "^7.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^22.14.0",
     "@types/papaparse": "^5.5.2",
     "@vitejs/plugin-react": "^5.0.0",

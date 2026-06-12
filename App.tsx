@@ -13,6 +13,7 @@ import AdminSettingsPage from './pages/AdminSettingsPage';
 import AdminResultsPage from './pages/AdminResultsPage';
 import AdminRekapPage from './pages/AdminRekapPage';
 import AdminSchedulesPage from './pages/AdminSchedulesPage';
+import PengawasanSppgPage from './pages/pengawasan/PengawasanSppgPage';
 
 // Auth Context
 export const AuthContext = React.createContext<{
@@ -79,6 +80,10 @@ function App() {
           <Route 
             path="/admin/schedules" 
             element={<AdminRoute><AdminSchedulesPage /></AdminRoute>} 
+          />
+          <Route 
+            path="/admin/pengawasan" 
+            element={<AdminRoute><PengawasanSppgPage /></AdminRoute>} 
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
