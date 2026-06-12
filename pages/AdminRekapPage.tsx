@@ -81,11 +81,12 @@ const AdminRekapPage: React.FC = () => {
                 displayDateStr = `${parseInt(day)}/${parseInt(m)}/${y}`;
             }
 
-            const groupKey = `${displayDateStr}_${sppgName}`;
+            // Group ONLY by Date as requested
+            const groupKey = displayDateStr;
 
             if (!groupedData[groupKey]) {
                 groupedData[groupKey] = {
-                    sppg: sppgName,
+                    sppg: '', // Will be updated to keep the most complete name
                     date: displayDateStr,
                     rawDate: officialDateYMD ? new Date(officialDateYMD).getTime() : new Date(score.timestamp).setHours(0, 0, 0, 0),
                     filterDateYMD: officialDateYMD || scoreDateYMD,
@@ -101,6 +102,11 @@ const AdminRekapPage: React.FC = () => {
             } else if (score.testType === TestType.POST_TEST) {
                 row.postTestCount++;
             }
+
+            // Keep the most complete name for the SPPG column
+            if (sppgName.length > row.sppg.length && sppgName !== 'TIDAK DIKETAHUI') {
+                row.sppg = sppgName;
+            }
         });
 
         let allRows: RekapRow[] = Object.values(groupedData);
@@ -112,7 +118,7 @@ const AdminRekapPage: React.FC = () => {
              // Sort by date descending (newest first)
              return b.rawDate - a.rawDate;
         });
-    }, [scores, searchTerm]);
+    }, [scores, searchTerm, schedules]);
 
     const downloadExport = () => {
         if (rekapData.length === 0) {
