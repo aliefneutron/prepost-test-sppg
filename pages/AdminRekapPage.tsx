@@ -218,7 +218,7 @@ const AdminRekapPage: React.FC = () => {
                                             key={idx} 
                                             className="border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors"
                                             onClick={() => {
-                                                navigate(`/admin/results?sppg=${encodeURIComponent(row.sppg)}&date=${encodeURIComponent(row.filterDateYMD)}`);
+                                                navigate(`/admin/results?date=${encodeURIComponent(row.filterDateYMD)}`);
                                             }}
                                         >
                                             <td className="p-4 text-center font-bold text-gray-500">{idx + 1}</td>
