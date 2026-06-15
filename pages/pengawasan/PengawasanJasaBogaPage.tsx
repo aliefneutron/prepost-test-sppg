@@ -402,7 +402,16 @@ export default function PengawasanJasaBogaPage() {
                     value={info.penjamahBersertifikat} 
                     onChange={(v: string) => setInfo({...info, penjamahBersertifikat: v})} 
                   />
-
+                </div>
+                
+                <div className="mt-8 flex justify-end">
+                  <button 
+                    onClick={() => setStep(2)}
+                    className="px-6 py-3 bg-[#1a1a1a] text-white rounded-xl shadow-lg shadow-black/10 flex items-center gap-2 hover:bg-black hover:scale-[1.02] transition-all"
+                  >
+                    <span className="text-sm font-black uppercase tracking-widest">Selanjutnya</span>
+                    <ChevronRight size={18} />
+                  </button>
                 </div>
               </motion.div>
             )}
@@ -496,6 +505,16 @@ export default function PengawasanJasaBogaPage() {
                   );
                 })}
               </div>
+              
+              <div className="mt-8 flex justify-end">
+                <button 
+                  onClick={() => setStep(3)}
+                  className="px-6 py-3 bg-[#1a1a1a] text-white rounded-xl shadow-lg shadow-black/10 flex items-center gap-2 hover:bg-black hover:scale-[1.02] transition-all"
+                >
+                  <span className="text-sm font-black uppercase tracking-widest">Selanjutnya</span>
+                  <ChevronRight size={18} />
+                </button>
+              </div>
               </motion.div>
             )}
 
@@ -579,6 +598,16 @@ export default function PengawasanJasaBogaPage() {
                     onChange={e => setCatatan(e.target.value)}
                     placeholder="Masukkan catatan tambahan di sini..."
                   />
+                </div>
+
+                <div className="mt-8 flex justify-end">
+                  <button 
+                    onClick={() => setStep(4)}
+                    className="px-6 py-3 bg-[#1a1a1a] text-white rounded-xl shadow-lg shadow-black/10 flex items-center gap-2 hover:bg-black hover:scale-[1.02] transition-all"
+                  >
+                    <span className="text-sm font-black uppercase tracking-widest">Lihat Hasil</span>
+                    <ChevronRight size={18} />
+                  </button>
                 </div>
               </motion.div>
             )}
