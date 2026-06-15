@@ -22,7 +22,7 @@ export const exportToExcelJasaBoga = (data: any) => {
     ["Tanggal Pemeriksaan", info.tanggalPemeriksaan],
 
     ["Jumlah Hari Berjualan/Bulan", info.hariBerjualan || ""],
-    ["Menu Pangan Berisiko", info.menuBerisiko || ""],
+
     [],
     ["TOTAL SKOR (POIN)", `${totalMaxScore - (totalPointsLost || 0)} / ${totalMaxScore}`],
     ["PERSENTASE SKOR IKL", `${iklScore}%`],

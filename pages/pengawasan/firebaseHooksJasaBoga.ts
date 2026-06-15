@@ -15,7 +15,7 @@ export interface JasaBogaInfo {
   tanggalPemeriksaan: string;
 
   hariBerjualan: string;
-  menuBerisiko: string;
+
 }
 
 export type IKLJasaBogaAnswer = Record<string, boolean>;
@@ -41,7 +41,7 @@ const defaultData: InspectionJasaBogaData = {
     tanggalPemeriksaan: new Date().toISOString().split("T")[0],
 
     hariBerjualan: "",
-    menuBerisiko: "",
+
   },
   iklAnswers: {},
   catatan: "",

@@ -402,14 +402,7 @@ export default function PengawasanJasaBogaPage() {
                     value={info.penjamahBersertifikat} 
                     onChange={(v: string) => setInfo({...info, penjamahBersertifikat: v})} 
                   />
-                  <div className="md:col-span-2">
-                    <Input 
-                      label="Menu Pangan Berisiko yang Dijual" 
-                      icon={<AlertCircle size={16}/>} 
-                      value={info.menuBerisiko} 
-                      onChange={(v: string) => setInfo({...info, menuBerisiko: v})} 
-                    />
-                  </div>
+
                 </div>
               </motion.div>
             )}
