@@ -7,7 +7,7 @@ Fill each field with the text from the KTP. If a field cannot be read, use empty
 
 // === GROQ Vision OCR (Primary - Gratis, Akurat) ===
 const extractWithGroq = async (base64Image: string): Promise<KTPData> => {
-  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  const apiKey = (import.meta.env.VITE_GROQ_API_KEY_P1 || "") + (import.meta.env.VITE_GROQ_API_KEY_P2 || "");
   if (!apiKey) throw new Error("No Groq API key");
 
   // Pastikan format base64 benar
