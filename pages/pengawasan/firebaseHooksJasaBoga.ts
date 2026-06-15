@@ -13,7 +13,7 @@ export interface JasaBogaInfo {
   penjamahBersertifikat: string;
   namaPemeriksa: string;
   tanggalPemeriksaan: string;
-  tipeJasaBoga: string;
+
   hariBerjualan: string;
   menuBerisiko: string;
 }
@@ -39,7 +39,7 @@ const defaultData: InspectionJasaBogaData = {
     penjamahBersertifikat: "",
     namaPemeriksa: "",
     tanggalPemeriksaan: new Date().toISOString().split("T")[0],
-    tipeJasaBoga: "",
+
     hariBerjualan: "",
     menuBerisiko: "",
   },

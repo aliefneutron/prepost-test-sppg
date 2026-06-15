@@ -20,7 +20,7 @@ export const exportToExcelJasaBoga = (data: any) => {
     ["Penjamah Bersertifikat", info.penjamahBersertifikat],
     ["Nama Pemeriksa", info.namaPemeriksa],
     ["Tanggal Pemeriksaan", info.tanggalPemeriksaan],
-    ["Tipe Jasa Boga / Katering", info.tipeJasaBoga || ""],
+
     ["Jumlah Hari Berjualan/Bulan", info.hariBerjualan || ""],
     ["Menu Pangan Berisiko", info.menuBerisiko || ""],
     [],

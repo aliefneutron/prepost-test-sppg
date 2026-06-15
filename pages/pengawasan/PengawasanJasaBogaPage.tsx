@@ -371,13 +371,7 @@ export default function PengawasanJasaBogaPage() {
                     value={info.tanggalPemeriksaan} 
                     onChange={(v: string) => setInfo({...info, tanggalPemeriksaan: v})} 
                   />
-                  <Input 
-                    label="Tipe Jasa Boga / Katering" 
-                    icon={<Building2 size={16}/>} 
-                    value={info.tipeJasaBoga} 
-                    onChange={(v: string) => setInfo({...info, tipeJasaBoga: v})} 
-                    options={["Golongan A", "Golongan B", "Golongan C"]}
-                  />
+
                   <Input 
                     label="Jumlah Hari Berjualan / Bulan" 
                     icon={<Zap size={16}/>} 
@@ -676,7 +670,7 @@ export default function PengawasanJasaBogaPage() {
                        <DetailRow label="Alamat Lengkap" value={info.alamat || "-"} />
                        <DetailRow label="Pemeriksa (Sanitarian)" value={info.namaPemeriksa || "-"} />
                        <DetailRow label="Tanggal Pemeriksaan" value={info.tanggalPemeriksaan || "-"} />
-                       <DetailRow label="Tipe Jasa Boga" value={info.tipeJasaBoga || "-"} />
+
                        <DetailRow label="Porsi Harian" value={info.porsiHarian || "-"} />
                     </div>
                   </div>
