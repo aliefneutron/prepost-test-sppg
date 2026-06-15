@@ -14,6 +14,7 @@ import AdminResultsPage from './pages/AdminResultsPage';
 import AdminRekapPage from './pages/AdminRekapPage';
 import AdminSchedulesPage from './pages/AdminSchedulesPage';
 import PengawasanSppgPage from './pages/pengawasan/PengawasanSppgPage';
+import PengawasanJasaBogaPage from './pages/pengawasan/PengawasanJasaBogaPage';
 
 // Auth Context
 export const AuthContext = React.createContext<{
@@ -84,6 +85,10 @@ function App() {
           <Route 
             path="/admin/pengawasan" 
             element={<AdminRoute><PengawasanSppgPage /></AdminRoute>} 
+          />
+          <Route 
+            path="/admin/pengawasan-jasaboga" 
+            element={<AdminRoute><PengawasanJasaBogaPage /></AdminRoute>} 
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
