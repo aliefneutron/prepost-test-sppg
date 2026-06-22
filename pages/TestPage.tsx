@@ -218,35 +218,73 @@ const TestPage: React.FC = () => {
     setOcrError(null);
 
     const reader = new FileReader();
-    reader.onload = async (event) => {
-      const imageData = event.target?.result as string;
-      try {
-        const ktpData = await extractKTPData(imageData);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = async () => {
+        const MAX_SIZE = 1600;
+        let width = img.width;
+        let height = img.height;
 
-        const fullAddress = [ktpData.alamat, ktpData.rt_rw, ktpData.kel_desa, ktpData.kecamatan]
-          .filter(Boolean).join(', ');
-
-        setRegistrationData(prev => ({
-          ...prev,
-          ktp: ktpData.nik || prev.ktp,
-          name: ktpData.nama || prev.name,
-          address: fullAddress || prev.address,
-          birthInfo: ktpData.tempat_tgl_lahir || prev.birthInfo,
-        }));
-
-        if (!ktpData.nik && !ktpData.nama && !ktpData.alamat) {
-          setOcrError("Data tidak terbaca dari foto ini. Pastikan foto tidak silau dan teks terlihat kontras.");
-        } else if (ktpData.usedFallback) {
-          alert("Data berhasil diisi! (Menggunakan OCR lokal — periksa kembali data yang terisi)");
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height = Math.round(height * (MAX_SIZE / width));
+            width = MAX_SIZE;
+          }
         } else {
-          alert("Data berhasil diisi otomatis dari KTP!");
+          if (height > MAX_SIZE) {
+            width = Math.round(width * (MAX_SIZE / height));
+            height = MAX_SIZE;
+          }
         }
-      } catch (error: any) {
-        console.error("File OCR error:", error);
-        setOcrError(`Gagal: ${error?.message || 'Error tidak diketahui'}`);
-      } finally {
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          setOcrError("Gagal memproses gambar.");
+          setIsOcrLoading(false);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const processedImageData = canvas.toDataURL('image/jpeg', 0.9);
+
+        try {
+          const ktpData = await extractKTPData(processedImageData);
+
+          const fullAddress = [ktpData.alamat, ktpData.rt_rw, ktpData.kel_desa, ktpData.kecamatan]
+            .filter(Boolean).join(', ');
+
+          setRegistrationData(prev => ({
+            ...prev,
+            ktp: ktpData.nik || prev.ktp,
+            name: ktpData.nama || prev.name,
+            address: fullAddress || prev.address,
+            birthInfo: ktpData.tempat_tgl_lahir || prev.birthInfo,
+          }));
+
+          if (!ktpData.nik && !ktpData.nama && !ktpData.alamat) {
+            setOcrError("Data tidak terbaca dari foto ini. Pastikan foto tidak silau dan teks terlihat kontras.");
+          } else if (ktpData.usedFallback) {
+            alert("Data berhasil diisi! (Menggunakan OCR lokal — periksa kembali data yang terisi)");
+          } else {
+            alert("Data berhasil diisi otomatis dari KTP!");
+          }
+        } catch (error: any) {
+          console.error("File OCR error:", error);
+          setOcrError(`Gagal: ${error?.message || 'Error tidak diketahui'}`);
+        } finally {
+          setIsOcrLoading(false);
+        }
+      };
+      
+      img.onerror = () => {
+        setOcrError("File tidak valid atau gambar rusak.");
         setIsOcrLoading(false);
-      }
+      };
+
+      img.src = event.target?.result as string;
     };
     reader.readAsDataURL(file);
   };
