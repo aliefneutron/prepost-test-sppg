@@ -5,43 +5,41 @@ const PROMPT = `You are an OCR engine for Indonesian ID cards (KTP). Extract all
 {"nik":"","nama":"","tempat_tgl_lahir":"","jenis_kelamin":"","alamat":"","rt_rw":"","kel_desa":"","kecamatan":"","agama":"","status_perkawinan":"","pekerjaan":"","kewarganegaraan":"","berlaku_hingga":""}
 Fill each field with the text from the KTP. If a field cannot be read, use empty string.`;
 
-// === GROQ Vision OCR (Primary - Gratis, Akurat) ===
-const extractWithGroq = async (base64Image: string): Promise<KTPData> => {
-  const p1 = import.meta.env.VITE_GROQ_API_KEY_P1 || "";
-  const p2 = import.meta.env.VITE_GROQ_API_KEY_P2 || "";
-  const apiKey = [p1, p2].join("");
-  if (!apiKey) throw new Error("No Groq API key");
+// === GEMINI Vision OCR (Primary - Akurat) ===
+const extractWithGemini = async (base64Image: string): Promise<KTPData> => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) throw new Error("No Gemini API key");
 
-  // Pastikan format base64 benar
-  const imageUrl = base64Image.startsWith('data:')
-    ? base64Image
-    : `data:image/jpeg;base64,${base64Image}`;
+  // Pastikan format base64 benar dan hapus prefix jika ada
+  const base64Data = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+  const mimeMatch = base64Image.match(/^data:(image\/(png|jpeg|jpg));base64,/);
+  const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-      messages: [
+      contents: [
         {
           role: 'user',
-          content: [
+          parts: [
             {
-              type: 'image_url',
-              image_url: { url: imageUrl },
+              inlineData: {
+                data: base64Data,
+                mimeType: mimeType
+              }
             },
             {
-              type: 'text',
-              text: PROMPT,
-            },
-          ],
-        },
+              text: PROMPT
+            }
+          ]
+        }
       ],
-      max_tokens: 1024,
-      temperature: 0.1,
+      generationConfig: {
+        temperature: 0.1,
+      }
     }),
   });
 
@@ -51,8 +49,8 @@ const extractWithGroq = async (base64Image: string): Promise<KTPData> => {
   }
 
   const data = await response.json();
-  const text = data.choices?.[0]?.message?.content;
-  if (!text) throw new Error("Empty response from Groq");
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Empty response from Gemini");
 
   const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
   return JSON.parse(cleaned) as KTPData;
@@ -118,7 +116,7 @@ const extractWithTesseract = async (base64Image: string): Promise<KTPData> => {
   };
 };
 
-// === MAIN: Groq → Tesseract fallback ===
+// === MAIN: Gemini → Tesseract fallback ===
 export const extractKTPData = async (
   base64Image: string,
   signal?: AbortSignal
@@ -126,11 +124,11 @@ export const extractKTPData = async (
   if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
 
   try {
-    const result = await extractWithGroq(base64Image);
-    console.log("✅ OCR via Groq berhasil");
+    const result = await extractWithGemini(base64Image);
+    console.log("✅ OCR via Gemini berhasil");
     return result;
-  } catch (groqError: any) {
-    console.warn("⚠️ Groq gagal, beralih ke Tesseract:", groqError?.message);
+  } catch (apiError: any) {
+    console.warn("⚠️ Gemini gagal, beralih ke Tesseract:", apiError?.message);
     if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
     const result = await extractWithTesseract(base64Image);
     return { ...result, usedFallback: true };
