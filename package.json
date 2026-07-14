@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist --repo https://github.com/aliefneutron/prepost-test-sppg.git"
   },
   "dependencies": {
     "@google/genai": "^1.50.1",
@@ -24,7 +24,6 @@
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.4",
     "tailwindcss": "^4.3.0",
-    "tesseract.js": "^7.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

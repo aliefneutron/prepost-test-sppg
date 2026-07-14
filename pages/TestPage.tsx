@@ -197,14 +197,11 @@ const TestPage: React.FC = () => {
       if (!ktpData.nik && !ktpData.nama && !ktpData.alamat) {
         setOcrError("Data kurang terbaca. Pastikan KTP berada di dalam kotak dan cahaya cukup.");
       } else {
-        if (ktpData.usedFallback) {
-          setOcrError("⚠️ Menggunakan OCR lokal (akurasi terbatas). Periksa kembali data yang terisi.");
-        }
         stopScanning();
       }
     } catch (err: any) {
       console.error("OCR error:", err);
-      setOcrError(`Gagal: ${err?.message || 'Error tidak diketahui'}. Silakan isi manual.`);
+      setOcrError(`Gagal (Groq API): ${err?.message || 'Error tidak diketahui'}. Silakan isi manual.`);
     } finally {
       setIsOcrLoading(false);
     }
@@ -266,14 +263,12 @@ const TestPage: React.FC = () => {
 
           if (!ktpData.nik && !ktpData.nama && !ktpData.alamat) {
             setOcrError("Data tidak terbaca dari foto ini. Pastikan foto tidak silau dan teks terlihat kontras.");
-          } else if (ktpData.usedFallback) {
-            alert("Data berhasil diisi! (Menggunakan OCR lokal — periksa kembali data yang terisi)");
           } else {
             alert("Data berhasil diisi otomatis dari KTP!");
           }
         } catch (error: any) {
           console.error("File OCR error:", error);
-          setOcrError(`Gagal: ${error?.message || 'Error tidak diketahui'}`);
+          setOcrError(`Gagal (Groq API): ${error?.message || 'Error tidak diketahui'}`);
         } finally {
           setIsOcrLoading(false);
         }
@@ -666,6 +661,9 @@ const TestPage: React.FC = () => {
           <button onClick={() => navigate('/')} className="w-full mt-4 text-gray-500 hover:text-gray-700 text-sm">
             Kembali ke Beranda
           </button>
+          <div className="mt-6 text-center text-xs text-gray-400 font-medium">
+            v2.1 - Groq Vision Only
+          </div>
         </div>
       </div>
       
