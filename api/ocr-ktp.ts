@@ -16,8 +16,8 @@ Petunjuk:
 
 // === GEMINI via REST API (Primary) ===
 async function extractWithGemini(base64Data: string): Promise<any> {
-  const apiKey = process.env.GEMINI_API_KEY || '';
-  if (!apiKey) throw new Error('GEMINI_API_KEY tidak dikonfigurasi di server');
+  const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+  if (!apiKey) throw new Error('API KEY Gemini tidak dikonfigurasi di server');
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
   const response = await fetch(url, {
@@ -51,8 +51,8 @@ async function extractWithGemini(base64Data: string): Promise<any> {
 
 // === GROQ Vision (Fallback) ===
 async function extractWithGroq(imageDataUrl: string): Promise<any> {
-  const apiKey = (process.env.GROQ_API_KEY_P1 || '') + (process.env.GROQ_API_KEY_P2 || '');
-  if (!apiKey.trim()) throw new Error('GROQ_API_KEY tidak dikonfigurasi di server');
+  const apiKey = process.env.VITE_GROQ_API_KEY || (process.env.GROQ_API_KEY_P1 || '') + (process.env.GROQ_API_KEY_P2 || '');
+  if (!apiKey.trim()) throw new Error('API KEY Groq tidak dikonfigurasi di server');
 
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
