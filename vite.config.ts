@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
-      base: '/prepost-test-sppg/',
+      base: process.env.VERCEL ? '/' : '/prepost-test-sppg/',
       server: {
         port: 3000,
         host: '0.0.0.0',
