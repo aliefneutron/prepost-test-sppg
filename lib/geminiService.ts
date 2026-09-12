@@ -15,6 +15,48 @@ export const parseApiKeys = (input: string | string[] | undefined | null): strin
   return Array.from(new Set(keys));
 };
 
+/**
+ * Format alamat KTP ke format terstandar:
+ * Contoh: "DUSUN BUJAAN, RT/RW 003/001, DESA LAPA LAOK, KECAMATAN DUNGKEK"
+ */
+export const formatKTPAddress = (ktpData: Partial<KTPData>): string => {
+  const parts: string[] = [];
+
+  // 1. Alamat (Jalan / Dusun / No Rumah)
+  if (ktpData.alamat?.trim()) {
+    parts.push(ktpData.alamat.trim().toUpperCase());
+  }
+
+  // 2. RT/RW: prefix dengan "RT/RW " jika belum ada
+  if (ktpData.rt_rw?.trim()) {
+    let rtrw = ktpData.rt_rw.trim().toUpperCase();
+    if (!rtrw.startsWith('RT') && !rtrw.startsWith('RW')) {
+      rtrw = `RT/RW ${rtrw}`;
+    }
+    parts.push(rtrw);
+  }
+
+  // 3. Desa / Kelurahan: prefix dengan "DESA " jika belum ada
+  if (ktpData.kel_desa?.trim()) {
+    let kel = ktpData.kel_desa.trim().toUpperCase();
+    if (!kel.startsWith('DESA') && !kel.startsWith('KEL') && !kel.startsWith('KELURAHAN')) {
+      kel = `DESA ${kel}`;
+    }
+    parts.push(kel);
+  }
+
+  // 4. Kecamatan: prefix dengan "KECAMATAN " jika belum ada
+  if (ktpData.kecamatan?.trim()) {
+    let kec = ktpData.kecamatan.trim().toUpperCase();
+    if (!kec.startsWith('KEC') && !kec.startsWith('KECAMATAN')) {
+      kec = `KECAMATAN ${kec}`;
+    }
+    parts.push(kec);
+  }
+
+  return parts.filter(Boolean).join(', ');
+};
+
 // === HELPER MULTI API KEY ===
 export const getGeminiApiKeys = (): string[] => {
   const collectedKeys: string[] = [];

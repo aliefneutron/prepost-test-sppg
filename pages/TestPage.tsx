@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Question, TestType, UserScore, Schedule } from '../types';
 import { IconCamera, IconScan, IconX, IconUpload } from '../components/icons';
-import { extractKTPData } from '../lib/geminiService';
+import { extractKTPData, formatKTPAddress } from '../lib/geminiService';
 import { db } from '../lib/firebase';
 import { 
   collection, 
@@ -183,8 +183,7 @@ const TestPage: React.FC = () => {
     try {
       const ktpData = await extractKTPData(imageData);
 
-      const fullAddress = [ktpData.alamat, ktpData.rt_rw, ktpData.kel_desa, ktpData.kecamatan]
-        .filter(Boolean).join(', ');
+      const fullAddress = formatKTPAddress(ktpData);
 
       setRegistrationData(prev => ({
         ...prev,
@@ -227,8 +226,7 @@ const TestPage: React.FC = () => {
 
         const ktpData = await extractKTPData(rawImageData);
 
-        const fullAddress = [ktpData.alamat, ktpData.rt_rw, ktpData.kel_desa, ktpData.kecamatan]
-          .filter(Boolean).join(', ');
+        const fullAddress = formatKTPAddress(ktpData);
 
         setRegistrationData(prev => ({
           ...prev,
