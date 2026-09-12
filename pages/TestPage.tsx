@@ -201,7 +201,7 @@ const TestPage: React.FC = () => {
       }
     } catch (err: any) {
       console.error("OCR error:", err);
-      setOcrError(`Gagal (Groq API): ${err?.message || 'Error tidak diketahui'}. Silakan isi manual.`);
+      setOcrError("Gagal membaca KTP secara otomatis. Silakan posisikan KTP lebih jelas atau isi data diri secara manual.");
     } finally {
       setIsOcrLoading(false);
     }
@@ -211,76 +211,51 @@ const TestPage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Reset input agar pengguna dapat memilih ulang file yang sama jika diperlukan
+    e.target.value = '';
+
     setIsOcrLoading(true);
     setOcrError(null);
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = async () => {
-        const MAX_SIZE = 1600;
-        let width = img.width;
-        let height = img.height;
+    reader.onload = async (event) => {
+      try {
+        const rawImageData = event.target?.result as string;
+        if (!rawImageData) {
+          throw new Error("Gagal membaca file foto.");
+        }
 
-        if (width > height) {
-          if (width > MAX_SIZE) {
-            height = Math.round(height * (MAX_SIZE / width));
-            width = MAX_SIZE;
-          }
+        const ktpData = await extractKTPData(rawImageData);
+
+        const fullAddress = [ktpData.alamat, ktpData.rt_rw, ktpData.kel_desa, ktpData.kecamatan]
+          .filter(Boolean).join(', ');
+
+        setRegistrationData(prev => ({
+          ...prev,
+          ktp: ktpData.nik || prev.ktp,
+          name: ktpData.nama || prev.name,
+          address: fullAddress || prev.address,
+          birthInfo: ktpData.tempat_tgl_lahir || prev.birthInfo,
+        }));
+
+        if (!ktpData.nik && !ktpData.nama && !ktpData.alamat) {
+          setOcrError("Data tidak terbaca dari foto ini. Pastikan foto tidak silau dan teks terlihat kontras.");
         } else {
-          if (height > MAX_SIZE) {
-            width = Math.round(width * (MAX_SIZE / height));
-            height = MAX_SIZE;
-          }
+          alert("Data berhasil diisi otomatis dari KTP!");
         }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          setOcrError("Gagal memproses gambar.");
-          setIsOcrLoading(false);
-          return;
-        }
-
-        ctx.drawImage(img, 0, 0, width, height);
-        const processedImageData = canvas.toDataURL('image/jpeg', 0.9);
-
-        try {
-          const ktpData = await extractKTPData(processedImageData);
-
-          const fullAddress = [ktpData.alamat, ktpData.rt_rw, ktpData.kel_desa, ktpData.kecamatan]
-            .filter(Boolean).join(', ');
-
-          setRegistrationData(prev => ({
-            ...prev,
-            ktp: ktpData.nik || prev.ktp,
-            name: ktpData.nama || prev.name,
-            address: fullAddress || prev.address,
-            birthInfo: ktpData.tempat_tgl_lahir || prev.birthInfo,
-          }));
-
-          if (!ktpData.nik && !ktpData.nama && !ktpData.alamat) {
-            setOcrError("Data tidak terbaca dari foto ini. Pastikan foto tidak silau dan teks terlihat kontras.");
-          } else {
-            alert("Data berhasil diisi otomatis dari KTP!");
-          }
-        } catch (error: any) {
-          console.error("File OCR error:", error);
-          setOcrError(`Gagal (Groq API): ${error?.message || 'Error tidak diketahui'}`);
-        } finally {
-          setIsOcrLoading(false);
-        }
-      };
-      
-      img.onerror = () => {
-        setOcrError("File tidak valid atau gambar rusak.");
+      } catch (error: any) {
+        console.error("File OCR error:", error);
+        setOcrError("Gagal membaca foto KTP secara otomatis. Silakan pastikan foto jelas atau isi data diri secara manual.");
+      } finally {
         setIsOcrLoading(false);
-      };
-
-      img.src = event.target?.result as string;
+      }
     };
+    
+    reader.onerror = () => {
+      setOcrError("File tidak valid atau gambar rusak.");
+      setIsOcrLoading(false);
+    };
+
     reader.readAsDataURL(file);
   };
 
@@ -290,16 +265,22 @@ const TestPage: React.FC = () => {
         setIsLoadingQuestions(true);
         setFetchError(null);
         
-        const q = query(collection(db, 'questions'), where('isActive', '==', true));
+        const q = query(collection(db, 'questions'));
         const querySnapshot = await getDocs(q);
         const questionsData: Question[] = [];
         querySnapshot.forEach((doc) => {
-          questionsData.push({ id: doc.id, ...doc.data() } as Question);
+          const data = doc.data() as any;
+          if (data.isActive !== false && data.isActive !== 'false') {
+            questionsData.push({ id: doc.id, ...data } as Question);
+          }
         });
-        setQuestions(questionsData);
+
+        // Fallback jika tidak ada yang bertanda isActive: true, gunakan seluruh soal
+        const finalQuestions = questionsData.length > 0 ? questionsData : querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Question));
+        setQuestions(finalQuestions);
         
-        if (questionsData.length > 0) {
-          const shuffled = shuffleArray(questionsData);
+        if (finalQuestions.length > 0) {
+          const shuffled = shuffleArray(finalQuestions);
           setTestQuestions(shuffled);
           setUserAnswers(new Array(shuffled.length).fill(null));
         }
@@ -478,13 +459,13 @@ const TestPage: React.FC = () => {
                   ) : (
                     <IconUpload className="w-6 h-6" />
                   )}
-                  {isOcrLoading ? 'Memproses...' : 'Upload dari Galeri'}
+                  {isOcrLoading ? 'Memproses...' : 'Upload dari Galeri / Folder'}
                 </button>
                 <input 
                   type="file" 
                   ref={filePickerRef} 
                   onChange={handleFileUpload} 
-                  accept="image/*" 
+                  accept="image/*,.jpg,.jpeg,.png,.webp,.heic" 
                   className="hidden" 
                 />
                 

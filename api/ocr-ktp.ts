@@ -15,38 +15,62 @@ Petunjuk:
 - Hanya kembalikan JSON, tidak ada teks lain`;
 
 // === GEMINI via REST API (Primary) ===
+// === GEMINI via REST API (Primary) ===
 async function extractWithGemini(base64Data: string): Promise<any> {
-  const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
-  if (!apiKey) throw new Error('API KEY Gemini tidak dikonfigurasi di server');
+  const rawApiKey = process.env.VITE_GEMINI_API_KEYS || process.env.GEMINI_API_KEYS || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY || '';
+  const apiKeys = rawApiKey.split(/[\n,;]+/).map(k => k.trim()).filter(k => k.length > 5);
+  if (apiKeys.length === 0) throw new Error('API KEY Gemini tidak dikonfigurasi di server');
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-          { text: PROMPT }
-        ]
-      }],
-      generationConfig: { temperature: 0, maxOutputTokens: 512 }
-    })
-  });
+  const models = ['gemini-3-flash-preview', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+  let lastErr: any = null;
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(`Gemini ${response.status}: ${err?.error?.message || response.statusText}`);
+  for (const apiKey of apiKeys) {
+    for (const model of models) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+                { text: PROMPT }
+              ]
+            }],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 1024,
+              responseMimeType: 'application/json'
+            }
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(`Gemini ${response.status}: ${err?.error?.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error('Gemini mengembalikan respons kosong');
+
+        const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('Gemini tidak mengembalikan JSON valid');
+        return JSON.parse(jsonMatch[0]);
+      } catch (err: any) {
+        lastErr = err;
+        const msg = err?.message?.toLowerCase() || '';
+        if (msg.includes('not found') || msg.includes('404') || msg.includes('unsupported') || msg.includes('models/')) {
+          continue;
+        }
+        break;
+      }
+    }
   }
 
-  const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error('Gemini mengembalikan respons kosong');
-
-  const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('Gemini tidak mengembalikan JSON valid');
-  return JSON.parse(jsonMatch[0]);
+  throw lastErr || new Error('Gemini OCR gagal pada semua API key');
 }
 
 // === GROQ Vision (Fallback) ===

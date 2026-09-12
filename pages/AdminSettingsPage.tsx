@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { db } from '../lib/firebase';
+import { db, isFirebaseConfigured, connectedProjectId, saveFirebaseConfig } from '../lib/firebase';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { parseApiKeys, setGeminiApiKey, getGeminiApiKeys } from '../lib/geminiService';
 
 const AdminSettingsPage: React.FC = () => {
   const [googleScriptUrl, setGoogleScriptUrl] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [geminiApiKeyInput, setGeminiApiKeyInput] = useState('');
   const [isPreTestActive, setIsPreTestActive] = useState(true);
   const [isPostTestActive, setIsPostTestActive] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
@@ -18,8 +20,19 @@ const AdminSettingsPage: React.FC = () => {
         const data = docSnap.data();
         setGoogleScriptUrl(data.googleScriptUrl || '');
         setInputValue(data.googleScriptUrl || '');
+        
+        // Gabungkan keys dari firestore atau lokal
+        const firestoreKeys = parseApiKeys(data.geminiApiKeys || data.geminiApiKey);
+        const allKeys = firestoreKeys.length > 0 ? firestoreKeys : getGeminiApiKeys();
+        setGeminiApiKeyInput(allKeys.join('\n'));
+
         if (data.isPreTestActive !== undefined) setIsPreTestActive(data.isPreTestActive);
         if (data.isPostTestActive !== undefined) setIsPostTestActive(data.isPostTestActive);
+      } else {
+        const localKeys = getGeminiApiKeys();
+        if (localKeys.length > 0) {
+          setGeminiApiKeyInput(localKeys.join('\n'));
+        }
       }
       setLoading(false);
     });
@@ -29,11 +42,17 @@ const AdminSettingsPage: React.FC = () => {
 
   const handleSave = async () => {
     try {
+      const parsedKeys = parseApiKeys(geminiApiKeyInput);
+      setGeminiApiKey(parsedKeys);
+
       await setDoc(doc(db, 'settings', 'global'), {
         googleScriptUrl: inputValue,
+        geminiApiKey: parsedKeys[0] || '',
+        geminiApiKeys: parsedKeys,
         isPreTestActive,
         isPostTestActive
       }, { merge: true });
+
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
     } catch (error) {
@@ -86,6 +105,83 @@ const AdminSettingsPage: React.FC = () => {
             className={`px-6 py-2 rounded-lg font-bold text-white transition-colors ${isSaved ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             {isSaved ? 'Saved!' : 'Save URL'}
+          </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Google Gemini AI (OCR KTP)</h2>
+            <span className={`px-3 py-1 rounded text-xs font-bold text-white ${parseApiKeys(geminiApiKeyInput).length > 0 ? 'bg-green-600' : 'bg-amber-500'}`}>
+              {parseApiKeys(geminiApiKeyInput).length} API Key Terdaftar (Auto-Failover)
+            </span>
+          </div>
+          <p className="text-gray-600 mb-4 text-sm">
+            Kunci API Google Gemini untuk fitur Scan KTP dan Upload KTP dari folder menggunakan model <code>gemini-3-flash-preview</code>. Dapatkan kunci API gratis di <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-blue-600 underline font-semibold">Google AI Studio</a>.
+          </p>
+          
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-1">
+              <label className="block text-sm font-medium text-gray-700">Daftar Google Gemini API Key</label>
+              <span className="text-xs text-gray-500">1 baris = 1 API Key (atau pisahkan dengan koma)</span>
+            </div>
+            <textarea
+              rows={4}
+              value={geminiApiKeyInput}
+              onChange={(e) => setGeminiApiKeyInput(e.target.value)}
+              placeholder="AIzaSyKeyPertama...&#10;AIzaSyKeyKeduaCadangan...&#10;AIzaSyKeyKetigaCadangan..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm leading-relaxed"
+            />
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded p-2.5 mt-2 text-xs">
+              💡 <strong>Rotasi Otomatis (Failover)</strong>: Anda dapat memasukkan beberapa API Key sekaligus. Jika API key utama mencapai batas kuota (HTTP 429) atau mengalami gangguan, sistem akan <strong>otomatis beralih ke API Key berikutnya</strong> secara instan tanpa mengganggu ujian peserta.
+            </div>
+          </div>
+          
+          <button
+            onClick={handleSave}
+            className={`px-6 py-2 rounded-lg font-bold text-white transition-colors ${isSaved ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}`}
+          >
+            {isSaved ? 'Saved!' : 'Simpan Semua Gemini API Key'}
+          </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Koneksi Database Firebase</h2>
+            <span className={`px-3 py-1 rounded text-xs font-bold text-white ${isFirebaseConfigured ? 'bg-green-600' : 'bg-red-500'}`}>
+              {isFirebaseConfigured ? 'Terhubung' : 'Belum Dikonfigurasi'}
+            </span>
+          </div>
+          <p className="text-gray-600 mb-2 text-sm">
+            Project Firebase yang aktif saat ini: <strong className="font-mono text-blue-600">{connectedProjectId}</strong>
+          </p>
+          <p className="text-gray-500 mb-4 text-xs">
+            Data pertanyaan (soal), hasil ujian, dan jadwal tersimpan di Firebase Firestore. Jika database belum terhubung, Anda dapat menempelkan objek konfigurasi Firebase (atau mengisi file <code>.env.local</code>) di bawah ini.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => {
+              const input = window.prompt(
+                'Paste objek konfigurasi Firebase Anda (JSON):\n\nContoh:\n{\n  "apiKey": "AIzaSy...",\n  "projectId": "nama-project",\n  "authDomain": "nama-project.firebaseapp.com",\n  "storageBucket": "nama-project.appspot.com",\n  "messagingSenderId": "...",\n  "appId": "..."\n}'
+              );
+              if (input && input.trim()) {
+                try {
+                  const cleanJson = input.replace(/^[^{]*/, '').replace(/[^}]*$/, '');
+                  const parsed = JSON.parse(cleanJson);
+                  if (parsed.projectId && parsed.apiKey) {
+                    saveFirebaseConfig(parsed);
+                    alert('Konfigurasi Firebase berhasil disimpan! Aplikasi akan dimuat ulang.');
+                  } else {
+                    alert('Format tidak valid. Pastikan ada properti "apiKey" dan "projectId".');
+                  }
+                } catch (err: any) {
+                  alert('Gagal membaca JSON: ' + err.message);
+                }
+              }
+            }}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-lg text-sm transition"
+          >
+            ⚙️ Hubungkan / Ganti Firebase Config
           </button>
         </div>
 

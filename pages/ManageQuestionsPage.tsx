@@ -3,7 +3,7 @@ import { Question } from '../types';
 import { IconTrash, IconPlus, IconUpload, IconEdit, IconSave, IconX } from '../components/icons';
 import AdminLayout from '../components/AdminLayout';
 import Papa from 'papaparse';
-import { db } from '../lib/firebase';
+import { db, isFirebaseConfigured, connectedProjectId, saveFirebaseConfig } from '../lib/firebase';
 import { 
   collection, 
   onSnapshot, 
@@ -269,9 +269,42 @@ const ManageQuestionsPage: React.FC = () => {
         <AdminLayout title="Manage Questions">
             <div className="space-y-8">
                 {/* Connection Status Debug */}
-                <div className="bg-gray-100 p-2 rounded text-xs text-gray-500 flex justify-between">
-                    <span>Connected to Project: <strong>{import.meta.env.VITE_FIREBASE_PROJECT_ID}</strong></span>
-                    <span>Status: <strong className={questions.length > 0 ? 'text-green-600' : 'text-orange-600'}>{loading ? 'Connecting...' : 'Connected'}</strong></span>
+                <div className="bg-gray-100 p-3 rounded-lg text-xs text-gray-700 flex flex-col sm:flex-row items-center justify-between gap-2 border border-gray-200">
+                    <div className="flex items-center gap-2">
+                        <span>Project Firebase: <strong>{connectedProjectId}</strong></span>
+                        <span className={`px-2 py-0.5 rounded text-white font-bold ${isFirebaseConfigured ? 'bg-green-600' : 'bg-red-500'}`}>
+                            {isFirebaseConfigured ? 'Terkonfigurasi' : 'Belum Terkonfigurasi'}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span>Total Soal: <strong className={questions.length > 0 ? 'text-green-600 font-bold' : 'text-orange-600 font-bold'}>{questions.length}</strong></span>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const input = window.prompt(
+                                    'Paste konfigurasi Firebase Anda (JSON object):\n\nContoh:\n{\n  "apiKey": "AIzaSy...",\n  "projectId": "nama-project",\n  "authDomain": "...",\n  "storageBucket": "...",\n  "messagingSenderId": "...",\n  "appId": "..."\n}'
+                                );
+                                if (input && input.trim()) {
+                                    try {
+                                        // Bersihkan jika ada const firebaseConfig = ...
+                                        const cleanJson = input.replace(/^[^{]*/, '').replace(/[^}]*$/, '');
+                                        const parsed = JSON.parse(cleanJson);
+                                        if (parsed.projectId && parsed.apiKey) {
+                                            saveFirebaseConfig(parsed);
+                                            alert('Konfigurasi Firebase berhasil disimpan! Halaman akan dimuat ulang.');
+                                        } else {
+                                            alert('Format tidak valid. Pastikan ada apiKey dan projectId.');
+                                        }
+                                    } catch (err: any) {
+                                        alert('Gagal memproses JSON: ' + err.message);
+                                    }
+                                }
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition"
+                        >
+                            ⚙️ Hubungkan Firebase
+                        </button>
+                    </div>
                 </div>
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-4">

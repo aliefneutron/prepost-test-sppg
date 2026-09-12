@@ -29,42 +29,77 @@ Petunjuk: nik=16 digit NIK, jenis_kelamin=LAKI-LAKI/PEREMPUAN, kosongkan field y
           try {
             const { image } = JSON.parse(body);
             const base64Data = image.includes(',') ? image.split(',')[1] : image;
-            const apiKey = process.env.VITE_GEMINI_API_KEY || '';
+            const rawApiKey = process.env.VITE_GEMINI_API_KEYS || process.env.GEMINI_API_KEYS || process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+            const apiKeys = rawApiKey.split(/[\n,;]+/).map((k: string) => k.trim()).filter((k: string) => k.length > 5);
 
-            if (!apiKey) {
+            if (apiKeys.length === 0) {
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ error: 'VITE_GEMINI_API_KEY tidak ditemukan di .env.local' }));
+              res.end(JSON.stringify({ error: 'GEMINI_API_KEY tidak ditemukan di .env.local' }));
               return;
             }
 
-            const geminiRes = await fetch(
-              `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  contents: [{
-                    parts: [
-                      { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-                      { text: PROMPT }
-                    ]
-                  }],
-                  generationConfig: { temperature: 0, maxOutputTokens: 512 }
-                })
+            const models = ['gemini-3-flash-preview', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+            let lastErr: any = null;
+            let successData: any = null;
+
+            for (const apiKey of apiKeys) {
+              for (const model of models) {
+                try {
+                  const geminiRes = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        contents: [{
+                          parts: [
+                            { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+                            { text: PROMPT }
+                          ]
+                        }],
+                        generationConfig: {
+                          temperature: 0.1,
+                          maxOutputTokens: 1024,
+                          responseMimeType: 'application/json'
+                        }
+                      })
+                    }
+                  );
+
+                  if (!geminiRes.ok) {
+                    const errJson = await geminiRes.json().catch(() => ({}));
+                    throw new Error(`Gemini ${geminiRes.status}: ${errJson?.error?.message || geminiRes.statusText}`);
+                  }
+
+                  const data = await geminiRes.json();
+                  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                  if (!text) throw new Error('Respons Gemini kosong');
+
+                  const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+                  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+                  if (!jsonMatch) throw new Error('Tidak ada JSON dalam respons Gemini');
+
+                  successData = jsonMatch[0];
+                  break;
+                } catch (err: any) {
+                  lastErr = err;
+                  const msg = err?.message?.toLowerCase() || '';
+                  if (msg.includes('not found') || msg.includes('404') || msg.includes('unsupported') || msg.includes('models/')) {
+                    continue;
+                  }
+                  break;
+                }
               }
-            );
+              if (successData) break;
+            }
 
-            const data = await geminiRes.json();
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!text) throw new Error('Respons Gemini kosong');
-
-            const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
-            const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) throw new Error('Tidak ada JSON dalam respons Gemini');
+            if (!successData) {
+              throw lastErr || new Error('Gagal mengekstrak KTP dengan Gemini');
+            }
 
             res.setHeader('Content-Type', 'application/json');
-            res.end(jsonMatch[0]);
+            res.end(successData);
           } catch (err: any) {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
@@ -78,16 +113,21 @@ Petunjuk: nik=16 digit NIK, jenis_kelamin=LAKI-LAKI/PEREMPUAN, kosongkan field y
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  const apiKey = env.GEMINI_API_KEYS || env.VITE_GEMINI_API_KEYS || env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || '';
+
   return {
-    base: process.env.VERCEL ? '/' : '/prepost-test-sppg/',
+    base: mode === 'development' || process.env.VERCEL ? '/' : '/prepost-test-sppg/',
     server: {
       port: 3000,
       host: '0.0.0.0',
     },
     plugins: [react(), tailwindcss(), ocrApiDevPlugin()],
     define: {
-      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+      'process.env.API_KEY': JSON.stringify(apiKey),
+      'process.env.GEMINI_API_KEY': JSON.stringify(apiKey),
+      'process.env.GEMINI_API_KEYS': JSON.stringify(apiKey),
+      'process.env.VITE_GEMINI_API_KEY': JSON.stringify(apiKey),
+      'process.env.VITE_GEMINI_API_KEYS': JSON.stringify(apiKey)
     },
     resolve: {
       alias: {

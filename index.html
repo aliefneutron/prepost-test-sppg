@@ -12,33 +12,23 @@
         background-color: #f0f2f5;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
+    <link rel="stylesheet" href="/index.css">
+  </head>
   <body>
     <div id="root"></div>
     <script>
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('./sw.js')
             .then(registration => {
-              console.log('SW registered: ', registration);
+              console.log('SW registered: ', registration.scope);
             })
             .catch(registrationError => {
-              console.log('SW registration failed: ', registrationError);
+              console.log('SW registration skipped: ', registrationError);
             });
         });
       }
     </script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>
