@@ -116,7 +116,7 @@ export default defineConfig(({ mode }) => {
   const apiKey = env.GEMINI_API_KEYS || env.VITE_GEMINI_API_KEYS || env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || '';
 
   return {
-    base: mode === 'development' || process.env.VERCEL ? '/' : '/prepost-test-sppg/',
+    base: process.env.GITHUB_PAGES === 'true' ? '/prepost-test-sppg/' : '/',
     server: {
       port: 3000,
       host: '0.0.0.0',
