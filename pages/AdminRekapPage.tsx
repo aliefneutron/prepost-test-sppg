@@ -166,13 +166,13 @@ const AdminRekapPage: React.FC = () => {
     };
 
     return (
-        <AdminLayout title="Rekapitulasi SPPG">
+        <AdminLayout title="Rekapitulasi TPP">
             <div className="space-y-6">
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-4 justify-between items-center">
                     <div className="flex-1 w-full">
                         <input 
                             type="text" 
-                            placeholder="Cari Nama SPPG atau Tanggal..." 
+                            placeholder="Cari Nama TPP atau Tanggal..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full md:max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
@@ -199,7 +199,7 @@ const AdminRekapPage: React.FC = () => {
 
                 <div className="flex justify-between items-center px-1">
                     <h2 className="text-lg font-bold text-gray-700">
-                        Total Pelaksanaan Test: <span className="text-blue-600">{rekapData.length}</span> SPPG
+                        Total Pelaksanaan Test: <span className="text-blue-600">{rekapData.length}</span> TPP
                     </h2>
                 </div>
 
@@ -212,7 +212,7 @@ const AdminRekapPage: React.FC = () => {
                                 <thead>
                                     <tr className="bg-gray-50 border-b border-gray-200">
                                         <th className="p-4 text-xs font-bold text-gray-500 uppercase w-12 text-center">No</th>
-                                        <th className="p-4 text-xs font-bold text-gray-500 uppercase">Nama SPPG</th>
+                                        <th className="p-4 text-xs font-bold text-gray-500 uppercase">Nama TPP</th>
                                         <th className="p-4 text-xs font-bold text-gray-500 uppercase">Tanggal Pelaksanaan</th>
                                         <th className="p-4 text-xs font-bold text-gray-500 uppercase text-center">Peserta Pre Test</th>
                                         <th className="p-4 text-xs font-bold text-gray-500 uppercase text-center">Peserta Post Test</th>

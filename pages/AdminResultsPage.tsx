@@ -115,7 +115,7 @@ const AdminResultsPage: React.FC = () => {
     };
 
     const downloadCSV = () => {
-        const headers = ['Name', 'KTP', 'Phone', 'TTL', 'Address', 'SPPG', 'Score', 'Test Type', 'Date'];
+        const headers = ['Name', 'KTP', 'Phone', 'TTL', 'Address', 'TPP', 'Score', 'Test Type', 'Date'];
         const rows = filteredScores.map(s => [
             s.name,
             s.ktp,
@@ -140,7 +140,7 @@ const AdminResultsPage: React.FC = () => {
                 'Phone': s.phone,
                 'TTL': s.birthInfo || '-',
                 'Address': s.address.replace(/\n/g, ' '),
-                'SPPG': s.sppg,
+                'TPP': s.sppg,
                 'Score': s.score,
                 'Test Type': s.testType,
                 'Date': new Date(s.timestamp).toLocaleString('id-ID')
@@ -189,7 +189,7 @@ const AdminResultsPage: React.FC = () => {
             return;
         }
 
-        const headers = ['Tanggal', 'NIK', 'Nama Lengkap', 'Tempat/Tgl Lahir', 'Alamat Lengkap', 'Nomer HP', 'Nama SPPG', 'Skor', 'Tipe Test'];
+        const headers = ['Tanggal', 'NIK', 'Nama Lengkap', 'Tempat/Tgl Lahir', 'Alamat Lengkap', 'Nomer HP', 'Nama TPP', 'Skor', 'Tipe Test'];
         const rows = passedScores.map(s => [
             new Date(s.timestamp).toLocaleDateString('id-ID'),
             s.ktp,
@@ -215,7 +215,7 @@ const AdminResultsPage: React.FC = () => {
                 'Tempat/Tgl Lahir': s.birthInfo || '-',
                 'Alamat Lengkap': s.address.replace(/\n/g, ' '),
                 'Nomer HP': s.phone,
-                'Nama SPPG': s.sppg,
+                'Nama TPP': s.sppg,
                 'Skor': s.score,
                 'Tipe Test': s.testType
             }));
@@ -253,7 +253,7 @@ const AdminResultsPage: React.FC = () => {
                     <div className="flex flex-col md:flex-row flex-1 gap-3 items-stretch md:items-center">
                         <input 
                             type="text" 
-                            placeholder="Search name, KTP, or SPPG..." 
+                            placeholder="Search name, KTP, or TPP..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none flex-1 min-w-[200px] text-sm"
@@ -399,7 +399,7 @@ const AdminResultsPage: React.FC = () => {
                                         </td>
                                         <td className="p-4">
                                             <div className="text-xs"><strong>TTL:</strong> {s.birthInfo || '-'}</div>
-                                            <div className="text-xs"><strong>SPPG:</strong> {s.sppg}</div>
+                                            <div className="text-xs"><strong>TPP:</strong> {s.sppg}</div>
                                             <div className="text-xs text-gray-500 truncate max-w-xs" title={s.address}>
                                                 <strong>Addr:</strong> {s.address}
                                             </div>
