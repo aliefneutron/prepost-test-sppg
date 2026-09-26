@@ -1,0 +1,2096 @@
+{
+  "jasa boga Gol B": [
+    [],
+    [
+      null,
+      "Form IKL JASA BOGA/KATERING:"
+    ],
+    [
+      null,
+      "FORMULIR INSPEKSI KESEHATAN LINGKUNGAN JASA BOGA/KATERING"
+    ],
+    [],
+    [
+      null,
+      "Nama Jasa Boga/Katering      "
+    ],
+    [
+      null,
+      "Alamat                                "
+    ],
+    [
+      null,
+      "Nama Pengelola/Pemilik/ Penanggung Jawab     "
+    ],
+    [
+      null,
+      "Jumlah Penjamah Pangan     "
+    ],
+    [
+      null,
+      "Jumlah Penjamah Pangan yang memiliki sertifikat pelatihan kemanan pangan\r\nsiap saji/sertifikat kompetensi  "
+    ],
+    [
+      null,
+      "Nomor Izin Usaha              "
+    ],
+    [
+      null,
+      "Nama Pemeriksa                  "
+    ],
+    [
+      null,
+      "Tanggal Penilaian             \r\n"
+    ],
+    [
+      null,
+      "Tipe Jasa Boga / Katering       "
+    ],
+    [
+      null,
+      "Jumlah rata-rata porsi yang dijual/hari  "
+    ],
+    [
+      null,
+      "Jumlah hari berjualan \r\nperbulan "
+    ],
+    [
+      null,
+      "Menu pangan berisiko yang \r\ndijual"
+    ],
+    [
+      null,
+      "No",
+      "Kriteria Penilaian",
+      null,
+      "Lingkari pada nilai jika persyaratan tidak terpenuhi",
+      null,
+      null,
+      "Lingkari pada nilai jika persyaratan tidak terpenuhi"
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      "Gol B"
+    ],
+    [
+      null,
+      "Inspeksi Area Luar TPP"
+    ],
+    [
+      null,
+      "A",
+      "Lokasi"
+    ],
+    [
+      null,
+      1,
+      "Lokasi bebas banjir",
+      null,
+      3
+    ],
+    [
+      null,
+      2,
+      "Lokasi bebas dari pencemaran bau/asap/debu",
+      null,
+      1
+    ],
+    [
+      null,
+      3,
+      "Lokasi bebas dari sumber bebas vektor dan binatang pembawa penyakit",
+      null,
+      1
+    ],
+    [
+      null,
+      "B",
+      "Bangunan dan Fasilitasnya"
+    ],
+    [
+      null,
+      1,
+      "Bangunan pengolahan pangan memiliki pagar pembatas",
+      null,
+      1
+    ],
+    [
+      null,
+      2,
+      "Area parkir kendaraan jauh dari pintu masuk bangunan pengolahan pangan untuk mencegah kontaminasi asap kendaraan masuk ke ruang pengolahan pangan",
+      null,
+      1
+    ],
+    [
+      null,
+      3,
+      "Halaman bangunan pengolahan pangan bebas vektor dan binatang pembawa penyakit atau binatang peliharaan",
+      null,
+      1
+    ],
+    [
+      null,
+      4,
+      "Jika halaman memiliki tanaman, tanaman tidak menempel langsung bangunan/dinding pengolahan pangan",
+      null,
+      1
+    ],
+    [
+      null,
+      5,
+      "Dinding bangunan tidak ada retakan yang membuka ke dalam area pengolahan pangan",
+      null,
+      1
+    ],
+    [
+      null,
+      6,
+      "Tersedia tempat sampah di area luar, yang:",
+      null,
+      1
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tertutup rapat",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak ada bau yang menyengat",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tidak ada tumpukan sampah menggunung",
+      1
+    ],
+    [
+      null,
+      7,
+      "Terdapat sistem drainase di area luar, yang:",
+      null,
+      1
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bersih",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak ada luapan air/sumbatan",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Memiliki grease trap/penangkap lemak",
+      1
+    ],
+    [
+      null,
+      8,
+      "Plafon bagian luar bangunan pengolahan pangan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tidak ada lubang ke area dalam bangunan pengolahan (tempat sarang atau akses vektor dan binatang pembawa penyakit masuk ke area pengolahan)",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak ada sawang/bebas kotoran",
+      1
+    ],
+    [
+      null,
+      9,
+      "Pintu masuk TPP:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bahan kuat dan tahan lama",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Desain halus/rata",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Dapat menutup rapat",
+      1
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Membuka ke arah luar",
+      1
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Selalu tertutup untuk menghindari akses vektor dan binatang pembawa penyakit (atau memiliki penghalang bebas vektor dan binatang pembawa penyakit seperti plastic curtain atau air curtain)",
+      1
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Khusus Golongan B dan C: pintu masuk bahan baku dan produk matang dibuat terpisah",
+      1
+    ],
+    [
+      null,
+      10,
+      "Memiliki ventilasi udara (jendela/exhaust/AC/lainnya) dengan:",
+      null,
+      1
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bahan kuat dan tahan lama",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Jika terbuka, memiliki kasa anti serangga yang mudah dilepas dan dibersihkan",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Jika menggunakan exhaust atau air conditioner maka kondisi terawat, berfungsi dan bersih",
+      1
+    ],
+    [
+      null,
+      11,
+      "Tersedia ruang/area khusus untuk istirahat karyawan (jika lokasi TPP di gedung minimal disediakan kursi untuk istirahat karyawan)",
+      null,
+      1
+    ],
+    [
+      null,
+      12,
+      "Tersedia wastafel sebelum masuk bangunan",
+      null,
+      1
+    ],
+    [
+      null,
+      13,
+      "Wastafel:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Terdapat media petunjuk cuci tangan (poster atau tulisan)",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Terdapat sabun cuci tangan",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tersedia air mengalir",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Tersedia pengering tangan (bisa hand dryer atau tisu, tetapi tidak boleh kain serbet)",
+      1
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Bahan kuat",
+      1
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Desain mudah dibersihkan",
+      1
+    ],
+    [
+      null,
+      "C",
+      "Penanganan Pangan"
+    ],
+    [
+      null,
+      1,
+      "Tidak ada pengolahan pangan di area luar bangunan pengolahan pangan yang tidak memiliki pelindung",
+      null,
+      3
+    ],
+    [
+      null,
+      2,
+      "Pangan matang tidak disimpan dalam kondisi terbuka di area luar bangunan pengolahan pangan",
+      null,
+      3
+    ],
+    [
+      null,
+      "D",
+      "Fasilitas Karyawan"
+    ],
+    [
+      null,
+      1,
+      "Loker karyawan (jika lokasi TPP di dalam gedung, posisi loker tidak boleh menyebabkan kontaminasi silang):"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Terdapat loker karyawan terpisah (perempuan dan laki-laki)",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Terdapat tata tertib penggunaan loker",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Loker tidak digunakan sebagai tempat penyimpanan makanan karyawan",
+      1
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Loker tidak digunakan sebagai tempat penyimpanan peralatan pengolahan pangan",
+      2
+    ],
+    [
+      null,
+      "E",
+      "Area Penerimaan Bahan Baku"
+    ],
+    [
+      null,
+      1,
+      "Area penerimaan bersih dan rapih",
+      null,
+      1
+    ],
+    [
+      null,
+      2,
+      "Kendaraan untuk mengangkut bahan pangan bersih, dan tidak digunakan untuk selain bahan pangan",
+      null,
+      2
+    ],
+    [
+      null,
+      3,
+      "Transit time bahan baku pangan cukup untuk memastikan bahan baku yang memerlukan pengendalian suhu (suhu chiller dan freezer) tidak rusak",
+      null,
+      2
+    ],
+    [
+      null,
+      4,
+      "Suhu kendaraan yang mengangkut pangan segar (jika kondisi suhu dikendalikan sesuai suhu chiller atau freezer) harus sesuai",
+      null,
+      2
+    ],
+    [
+      null,
+      "F",
+      "Persyaratan Bahan Baku"
+    ],
+    [
+      null,
+      1,
+      "Bahan pangan yang diterima disimpan dalam wadah dan suhu yang sesuai dengan jenis pangan tersebut",
+      null,
+      2
+    ],
+    [
+      null,
+      2,
+      "Bahan baku pangan dalam kemasan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Memiliki label",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Terdaftar atau ada izin edar",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tidak kedaluwarsa",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Kemasan tidak rusak (menggelembung, bocor, penyok atau berkarat)",
+      2
+    ],
+    [
+      null,
+      4,
+      "Bahan pangan yang tidak dikemas/berlabel berasal dari sumber yang jelas/dipercaya",
+      null,
+      2
+    ],
+    [
+      null,
+      5,
+      "Jika bahan pangan tidak langsung digunakan maka bahan pangan diberikan label tanggal penerimaan",
+      null,
+      1
+    ],
+    [
+      null,
+      6,
+      "Tidak menggunakan makanan sisa yang sudah busuk sebagai bahan pangan untuk diolah menjadi makanan baru",
+      null,
+      2
+    ],
+    [
+      null,
+      7,
+      "Jika menggunakan es batu yang dicampur dengan pangan matang, maka es batu harus dibuat dari air yang memenuhi standar kualitas air minum/air yang sudah diolah/dimasak",
+      null,
+      2
+    ],
+    [
+      null,
+      8,
+      "Air untuk pengolahan pangan memenuhi standar kualitas air minum/air yang sudah diolah/dimasak",
+      null,
+      2
+    ],
+    [
+      null,
+      "Inspeksi Area Dalam"
+    ],
+    [
+      null,
+      "A",
+      "Area Penyimpanan Umum"
+    ],
+    [
+      null,
+      1,
+      "Dinding ruang penyimpanan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bersih (tidak ada kotoran, jamur atau cat mengelupas)",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak retak",
+      1
+    ],
+    [
+      null,
+      2,
+      "Lantai ruang penyimpanan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bersih (tidak ada kotoran, jamur atau ceceran pangan yang mengerak)",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak retak atau kuat",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tidak ada genangan air (struktur lantai landai ke arah pembuangan air)",
+      1
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Pertemuan dengan dinding tidak membentuk sudut mati (jika tidak demikian, maka pembersihan harus efektif)",
+      1
+    ],
+    [
+      null,
+      3,
+      "Langit-langit:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tinggi minimal 2,4 meter dari lantai",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Bersih",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tertutup rapat",
+      1
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Tidak ada jamur",
+      2
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Permukaan rata (jika tidak rata maka harus bersih, bebas debu atau bebas vektor dan binatang pembawa penyakit)",
+      1
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Tidak ada kondensasi air yang jatuh langsung ke bahan pangan",
+      2
+    ],
+    [
+      null,
+      4,
+      "Penyimpanan bahan baku menggunakan kartu stok First In First Out/First Expired First Out (FIFO/FEFO) (untuk bahan baku yang langsung habis, persyaratan ini dapat diabaikan)",
+      null,
+      1
+    ],
+    [
+      null,
+      5,
+      "Personil yang bekerja pada area ini:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Sehat",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Menggunakan APD (masker) dengan benar",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Menggunakan pakaian kerja",
+      1
+    ],
+    [
+      null,
+      6,
+      "Pencahayaan cukup dan lampu tercover (cover terbuat dari material yang tidak mudah pecah)",
+      null,
+      1
+    ],
+    [
+      null,
+      7,
+      "Tempat sampah:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tertutup dan tidak rusak penutupnya",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak dibuka dengan tangan (dibuka dengan pedal kaki)",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Dilapisi plastik",
+      1
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Dipisahkan antara sampah basah (organik) dan sampah kering (anorganik)",
+      1
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Tidak ada tumpukan sampah (pengangkutan keluar minimal 1 x 24 jam)",
+      1
+    ],
+    [
+      null,
+      8,
+      "Tidak ada vektor dan binatang pembawa penyakit atau hewan peliharaan berkeliaran di area ini",
+      null,
+      3
+    ],
+    [
+      null,
+      9,
+      "Metode pengendalian vektor dan binatang pembawa penyakit tidak menggunakan racun tetapi jebakan/perangkap yang tidak mengontaminasi pangan",
+      null,
+      3
+    ],
+    [
+      null,
+      10,
+      "Bahan kimia non pangan yang digunakan pada area ini memiliki label identitas dengan volume sesuai penggunaan harian (bukan kemasan besar)",
+      null,
+      2
+    ],
+    [
+      null,
+      null,
+      "Area Penyimpanan Bahan Pangan"
+    ],
+    [
+      null,
+      1,
+      "Ruang atau alat penyimpanan bahan pangan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Untuk bahan mentah dari hewan disimpan pada suhu ≤ 40C",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Bahan mentah lain yang membutuhkan pendinginan, misalnya sayuran harus disimpan pada suhu yang sesuai",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Bahan pangan beku yang tidak langsung digunakan disimpan pada suhu -180C atau di bawahnya",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Penyimpanan bahan pangan:"
+    ],
+    [
+      null,
+      null,
+      null,
+      "Disimpan di atas palet atau alas (jarak minimal 15 cm dari lantai)",
+      1
+    ],
+    [
+      null,
+      null,
+      null,
+      "Jarak penyimpanan dengan dinding minimal 5 cm",
+      1
+    ],
+    [
+      null,
+      null,
+      null,
+      "Jarak penyimpanan dengan langit-langit minimal 60 cm",
+      1
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Suhu gudang bahan pangan kering dan kaleng dijaga kurang dari 25°C.",
+      2
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Tidak terdapat bahan baku pangan yang kedaluwarsa",
+      2
+    ],
+    [
+      null,
+      null,
+      "g.",
+      "Tidak terdapat pangan yang busuk",
+      2
+    ],
+    [
+      null,
+      2,
+      "Chiller/freezer (jika ada):"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Khusus menyimpan bahan baku (tidak menyatu dengan pangan matang)",
+      3
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Chiller/freezer atau termometer untuk monitoring sudah dikalibrasi",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Suhu chiller sesuai (≤ 4 oC)",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Terdapat rekaman monitoring suhu chiller",
+      1
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Suhu freezer sesuai (≤ -15 oC)",
+      2
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Terdapat rekaman monitoring suhu freezer",
+      1
+    ],
+    [
+      null,
+      null,
+      "Area Penyimpanan Kemasan"
+    ],
+    [
+      null,
+      1,
+      "Terdapat area khusus penyimpanan kemasan",
+      null,
+      1
+    ],
+    [
+      null,
+      2,
+      "Penyimpanan kemasan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Disimpan di atas palet (jarak minimal 15 cm dari lantai)",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Jarak penyimpanan dengan dinding minimal 5 cm",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Jarak penyimpanan dengan langit-langit minimal 60 cm",
+      1
+    ],
+    [
+      null,
+      3,
+      "Kemasan khusus untuk pangan atau food grade",
+      null,
+      2
+    ],
+    [
+      null,
+      null,
+      "Area Penyimpanan Bahan Kimia Non Pangan"
+    ],
+    [
+      null,
+      1,
+      "Terdapat area/ruangan khusus (tidak menyatu dengan penyimpanan pangan siap saji atau bahan baku pangan)",
+      null,
+      2
+    ],
+    [
+      null,
+      2,
+      "Ruangan penyimpanan memiliki akses terbatas (dikunci atau dengan metode lainnya yang sesuai)",
+      null,
+      2
+    ],
+    [
+      null,
+      3,
+      "Bahan kimia memiliki label yang memuat informasi tentang identitas dan cara penggunaan",
+      null,
+      2
+    ],
+    [
+      null,
+      "B",
+      "Area Pencucian"
+    ],
+    [
+      null,
+      1,
+      "Area/tempat pencucian peralatan terpisah dengan area/tempat pencucian pangan",
+      null,
+      1
+    ],
+    [
+      null,
+      2,
+      "Area pencucian peralatan dan pangan tidak digunakan untuk sanitasi karyawan seperti cuci\r\ntangan",
+      null,
+      1
+    ],
+    [
+      null,
+      3,
+      "Sarana pencucian peralatan terbuat dari bahan yang kuat, permukaan halus dan mudah dibersihkan",
+      null,
+      1
+    ],
+    [
+      null,
+      4,
+      "Proses pencucian peralatan dilakukan dengan 3 (tiga) proses yaitu pencucian, pembersihan dan sanitasi",
+      null,
+      1
+    ],
+    [
+      null,
+      5,
+      "Penggunaan disinfektan untuk pencucian bahan pangan, takarannya sesuai dengan persyaratan kesehatan/standar disinfektan",
+      null,
+      2
+    ],
+    [
+      null,
+      6,
+      "Pencucian bahan pangan menggunakan air dengan kualitas air minum/air yang sudah diolah/dimasak",
+      null,
+      2
+    ],
+    [
+      null,
+      7,
+      "Tersedia tempat sampah, yang:",
+      null,
+      1
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tertutup dan tidak rusak",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak dibuka dengan tangan (dibuka dengan pedal kaki)",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Dilapisi plastik",
+      1
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Dipisahkan antara sampah basah (organik) dan sampah kering (anorganik)",
+      1
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Tidak ada tumpukan sampah (pengangkutan keluar minimal 1 x 24 jam)",
+      1
+    ],
+    [
+      null,
+      8,
+      "Pengeringan dengan menggunakan lap/kain majun yang bersih dan diganti secara rutin",
+      null,
+      2
+    ],
+    [
+      null,
+      "C",
+      "Area Persiapan, Pengolahan dan Pengemasan\r\nPangan"
+    ],
+    [
+      null,
+      null,
+      "Umum"
+    ],
+    [
+      null,
+      1,
+      "Dapur jasaboga terpisah dengan dapur keluarga",
+      null,
+      1
+    ],
+    [
+      null,
+      2,
+      "Khusus golongan B dan C:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Luas lantai dapur yang bebas dari peralatan\r\nminimal 2 meter persegi (2m2) untuk setiap penjamah pangan yang sedang bekerja",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tata letak peralatan sesuai alur pengelolaan pangan (alur linear: persiapan - pengolahan pangan - pengemasan, dan seterusnya)",
+      1
+    ],
+    [
+      null,
+      3,
+      "Dinding ruangan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bersih (tidak ada kotoran, jamur atau cat mengelupas)",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak retak",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Bagian dinding yang terkena percikan air/minyak dilapisi bahan kedap air/minyak",
+      2
+    ],
+    [
+      null,
+      4,
+      "Lantai ruangan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bersih (tidak ada kotoran, jamur atau ceceran pangan yang mengerak)",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak retak atau kuat",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tidak ada genangan air (struktur lantai landai ke arah pembuangan air)",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Pertemuan dengan dinding tidak membentuk sudut mati (jika tidak demikian, maka pembersihan harus efektif)",
+      1
+    ],
+    [
+      null,
+      5,
+      "Langit-langit:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tinggi minimal 2,4 meter dari lantai",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Bersih",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tertutup rapat",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Tidak ada jamur",
+      2
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Permukaan rata (jika tidak rata maka harus bersih, bebas debu atau bebas vektor dan binatang pembawa penyakit)",
+      2
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Tidak ada kondensasi air yang langsung\r\njatuh ke pangan",
+      3
+    ],
+    [
+      null,
+      6,
+      "Penyimpanan bahan yang akan diolah tidak langsung di atas lantai (harus menggunakan wadah atau alas)",
+      null,
+      2
+    ],
+    [
+      null,
+      7,
+      "Personel yang bekerja pada area ini:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Sehat",
+      3
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Menggunakan APD berupa:"
+    ],
+    [
+      null,
+      null,
+      null,
+      "1. Celemek",
+      2
+    ],
+    [
+      null,
+      null,
+      null,
+      "2. Masker",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "3. Hairnet/penutup rambut",
+      3
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Menggunakan pakaian kerja yang hanya digunakan di tempat kerja",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Berkuku pendek, bersih dan tidak memakai pewarna kuku",
+      3
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Selalu mencuci tangan dengan sabun dan air mengalir sebelum dan secara berkala saat mengolah pangan",
+      3
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Tidak menggunakan perhiasan dan aksesoris lain (cincin, gelang, bros, dan lain- lain) ketika mengolah pangan",
+      3
+    ],
+    [
+      null,
+      null,
+      "g.",
+      "Pada saat mengolah pangan tidak:"
+    ],
+    [
+      null,
+      null,
+      null,
+      "1. merokok",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "2. bersin atau batuk di atas pangan langsung",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "3. meludah",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "4. mengunyah makanan/permen",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "5. menggaruk-garuk atau menyentuh anggota badan yang kotor dan kemudian menyentuh pangan",
+      3
+    ],
+    [
+      null,
+      null,
+      "h.",
+      "Mengambil pangan matang menggunakan sarung tangan atau alat bantu (contoh sendok, penjapit makanan)",
+      3
+    ],
+    [
+      null,
+      null,
+      "i.",
+      "Jika terluka maka luka ditutup dengan perban/sejenisnya dan ditutup penutup tahan air dan kondisi bersih",
+      3
+    ],
+    [
+      null,
+      8,
+      "Pencahayaan"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Cukup terang",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Lampu tercover di semua area dan cover tidak terbuat dari bahan kaca/yang mudah pecah",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Sumber pencahayaan alami seperti jendela tidak terbuka atau membuka langsung ke area luar",
+      2
+    ],
+    [
+      null,
+      9,
+      "Tersedia tempat sampah, yang:",
+      null,
+      2
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tertutup dan tidak rusak penutupnya",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Desain tidak berlubang-lubang",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tidak dibuka dengan tangan (bisa dengan pedal kaki)",
+      3
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Dilapisi plastik",
+      1
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Dipisahkan antara sampah basah (organik) dan sampah kering (anorganik)",
+      1
+    ],
+    [
+      null,
+      null,
+      "g.",
+      "Tidak ada tumpukan sampah (pembuangan keluar minimal 1 x 24 jam)",
+      2
+    ],
+    [
+      null,
+      10,
+      "Tidak ada vektor dan binatang pembawa penyakit atau hewan peliharaan berkeliaran di area ini",
+      null,
+      3
+    ],
+    [
+      null,
+      11,
+      "Metode pengendalian vektor dan binatang pembawa penyakit tidak menggunakan racun tetapi jebakan/perangkap yang tidak\r\nmengontaminasi pangan",
+      null,
+      3
+    ],
+    [
+      null,
+      12,
+      "Bahan kimia non pangan yang digunakan pada area ini memiliki label identitas dengan volume sesuai penggunaan harian (bukan kemasan\r\nbesar)",
+      null,
+      3
+    ],
+    [
+      null,
+      13,
+      "Pembuangan asap dapur dikeluarkan melalui cerobong yang dilengkapi dengan sungkup asap atau penyedot udara",
+      null,
+      2
+    ],
+    [
+      null,
+      14,
+      "Bahan pangan yang akan digunakan dibersihkan dan dicuci dengan air mengalir sebelum dimasak",
+      null,
+      2
+    ],
+    [
+      null,
+      15,
+      "Melakukan thawing/pelunakan dengan benar",
+      null,
+      2
+    ],
+    [
+      null,
+      16,
+      "Pangan dimasak sampai matang sempurna",
+      null,
+      3
+    ],
+    [
+      null,
+      17,
+      "Penyiapan buah dan sayuran segar yang langsung dikonsumsi dicuci dengan menggunakan air yang memenuhi standar kualitas air minum/air yang sudah\r\ndiolah/dimasak",
+      null,
+      3
+    ],
+    [
+      null,
+      18,
+      "Jika menggunakan es batu yang dicampur dengan pangan matang, maka es batu harus dibuat dari air yang memenuhi standar kualitas\r\nair minum/air yang sudah diolah/dimasak",
+      null,
+      3
+    ],
+    [
+      null,
+      null,
+      "Fasilitas Higiene Sanitasi Personil"
+    ],
+    [
+      null,
+      1,
+      "Tersedia wastafel, yang:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Terdapat petunjuk cuci tangan",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Terdapat sabun cuci tangan",
+      3
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tersedia air mengalir",
+      3
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Tersedia pengering tangan (bisa hand dryer atau tisu, tetapi tidak boleh kain serbet)",
+      2
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Bahan kuat",
+      1
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Desain mudah dibersihkan",
+      1
+    ],
+    [
+      null,
+      2,
+      "Tersedia toilet untuk karyawan yang mudah diakses (lokasi bisa berada di luar area pengolahan) dan tidak boleh membuka langsung\r\nke ruangan/area pengolahan pangan",
+      null,
+      3
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Desain:"
+    ],
+    [
+      null,
+      null,
+      null,
+      "1. Kuat",
+      1
+    ],
+    [
+      null,
+      null,
+      null,
+      "2. Permukaan halus",
+      1
+    ],
+    [
+      null,
+      null,
+      null,
+      "3. Mudah dibersihkan",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Jumlah cukup",
+      1
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tersedia:"
+    ],
+    [
+      null,
+      null,
+      null,
+      "1. Air mengalir",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "2. Sabun cuci tangan",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "3. Tempah sampah",
+      1
+    ],
+    [
+      null,
+      null,
+      null,
+      "4. Tisu/pengering",
+      2
+    ],
+    [
+      null,
+      null,
+      null,
+      "5. Ventilasi yang baik dan tidak membuka langsung ke ruang pengolahan",
+      3
+    ],
+    [
+      null,
+      null,
+      null,
+      "6. Dilengkapi petunjuk cuci tangan setelah dari toilet",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Dilengkapi wastafel dan fasilitasnya (sabun dan air mengalir) untuk cuci tangan",
+      2
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Khusus Golongan B dan C: toilet terpisah antara laki-laki dan perempuan",
+      1
+    ],
+    [
+      null,
+      null,
+      "Peralatan"
+    ],
+    [
+      null,
+      1,
+      "Peralatan untuk pengolahan pangan:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bahan kuat",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tidak terbuat dari kayu (contoh: talenan, alat pengaduk)",
+      3
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tidak berkarat",
+      3
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Tara pangan (food grade)",
+      3
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Bersih sebelum digunakan",
+      3
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Setelah digunakan kondisi bersih dan kering",
+      2
+    ],
+    [
+      null,
+      null,
+      "g.",
+      "Berbeda untuk pangan matang dan pangan mentah",
+      3
+    ],
+    [
+      null,
+      null,
+      "h.",
+      "Peralatan masak/makan sekali pakai tidak dipakai ulang dan food grade",
+      3
+    ],
+    [
+      null,
+      2,
+      "Tersedia termometer yang berfungsi dan akurat",
+      null,
+      2
+    ],
+    [
+      null,
+      3,
+      "Peralatan personal (misalnya handphone), peralatan kantor, dan lain-lain yang tidak diperlukan tidak diletakkan di area pengolahan\r\npangan",
+      null,
+      2
+    ],
+    [
+      null,
+      4,
+      "Alat pengering peralatan seperti lap/kain majun selalu dalam kondisi bersih dan diganti secara rutin untuk menghindari kontaminasi silang",
+      null,
+      2
+    ],
+    [
+      null,
+      5,
+      "Peralatan pembersih tidak menyebabkan kontaminasi silang (tidak boleh menggunakan\r\nsapu ijuk atau kemoceng)",
+      null,
+      2
+    ],
+    [
+      null,
+      null,
+      "Penyimpanan Pangan Matang"
+    ],
+    [
+      null,
+      1,
+      "Penyimpanan pangan matang tidak dicampur dengan bahan pangan mentah",
+      null,
+      3
+    ],
+    [
+      null,
+      2,
+      "Wadah penyimpanan pangan matang terpisah untuk setiap jenis pangan",
+      null,
+      2
+    ],
+    [
+      null,
+      3,
+      "Menyimpan pangan matang untuk bank sample yang disimpan di kulkas dalam jangka waktu 2 x 24 jam.",
+      null,
+      2
+    ],
+    [
+      null,
+      4,
+      "Chiller/freezer (jika ada):"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Khusus menyimpan pangan matang dengan kondisi terkemas",
+      3
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Suhu chiller/freezer atau termometer untuk monitoring sudah dikalibrasi",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Suhu chiller sesuai (≤ 4oC)",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Terdapat dokumen monitoring chiller\r\n(Golongan B dan C)",
+      2
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Suhu freezer sesuai (≤ -18oC)",
+      2
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Terdapat dokumen monitoring freezer\r\n(Golongan B dan C)",
+      2
+    ],
+    [
+      null,
+      null,
+      "Pengemasan Pangan Matang"
+    ],
+    [
+      null,
+      1,
+      "Pengemasan dilakukan secara higiene (personil cuci tangan dan menggunakan sarung tangan dengan kondisi baik)",
+      null,
+      3
+    ],
+    [
+      null,
+      2,
+      "Pangan matang harus dikemas dalam wadah tertutup dan tara pangan (food grade)",
+      null,
+      3
+    ],
+    [
+      null,
+      3,
+      "Kotak/kemasan untuk pangan yang matang:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Diberikan tanda batas waktu (expired date) tanggal dan waktu makanan boleh dikonsumsi",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Dicantumkan nomor sertifikat laik higiene sanitasi",
+      1
+    ],
+    [
+      null,
+      null,
+      "Pengangkutan Pangan Matang"
+    ],
+    [
+      null,
+      1,
+      "Selama pengangkutan, pangan harus dilindungi dari debu dan jenis kontaminasi lainnya",
+      null,
+      3
+    ],
+    [
+      null,
+      2,
+      "Pangan matang diangkut pada suhu yang sesuai menggunakan tempat yang dapat menjaga suhu panas dan atau dingin",
+      null,
+      3
+    ],
+    [
+      null,
+      3,
+      "Khusus jasa boga golongan B dan C: Tersedia kendaraan khusus pengangkut pangan matang, dengan kriteria:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Bersih",
+      2
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Bebas vektor dan binatang pembawa penyakit",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Terdapat pembersihan secara berkala",
+      2
+    ],
+    [
+      null,
+      "D.",
+      "Dokumentasi dan Rekaman (di akses di ruangan adminitrasi)"
+    ],
+    [
+      null,
+      1,
+      "Rekaman Khusus Golongan B dan C (catatan: ruang pengolahan dan adminitrasi pada jasa boga golongan C harus terpisah), dengan\r\nkriteria:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Tersedia dokumentasi /jadwal pemeliharaan bangunan",
+      1
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Tersedia dokumentasi /jadwal pembersihan dan sanitasi",
+      2
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tersedia dokumentasi/jadwal pemeliharaan peralatan seperti pengecekan suhu alat pendingin (kalibrasi)",
+      2
+    ],
+    [
+      null,
+      null,
+      "d.",
+      "Tersedia dokumentasi/jadwal pemeliharaan sistem penanganan limbah",
+      1
+    ],
+    [
+      null,
+      null,
+      "e.",
+      "Tersedia dokumentasi /jadwal pengendalian vektor dan binatang pembawa penyakit",
+      2
+    ],
+    [
+      null,
+      null,
+      "f.",
+      "Tersedia dokumentasi penerimaan bahan pangan",
+      1
+    ],
+    [
+      null,
+      2,
+      "Tersedia hasil analisa pengujian air yang sesuai dengan persyaratan air minum dan memiliki hasil yang sesuai persyaratan",
+      null,
+      3
+    ],
+    [
+      null,
+      3,
+      "Tersedia dokumentasi pengawasan internal secara berkala (menggunakan buku) rapor/formulir self assessment IKL)",
+      null,
+      2
+    ],
+    [
+      null,
+      null,
+      "Rekaman Personel"
+    ],
+    [
+      null,
+      1,
+      "Pengelola/pemilik memiliki sertifikat pelatihan keamanan pangan siap saji",
+      null,
+      2
+    ],
+    [
+      null,
+      2,
+      "Golongan A:\r\nPenjamah pangan sudah memiliki sertifikat pelatihan keamanan pangan siap saji atau sertifikat kompetensi (minimal 20%)",
+      null,
+      "NA"
+    ],
+    [
+      null,
+      3,
+      "Golongan B:\r\nPenjamah pangan sudah memiliki sertifikat pelatihan keamanan pangan siap saji atau sertifikat kompetensi (minimal 50%)",
+      null,
+      3
+    ],
+    [
+      null,
+      4,
+      "Golongan C:"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Penjamah pangan dilakukan pemeriksaan kesehatan di awal masuk kerja dibuktikan dengan surat keterangan sehat dari fasyankes",
+      "NA"
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Penjamah pangan sudah memiliki sertifikat pelatihan keamanan pangan siap saji atau sertifikat kompetensi (100%)",
+      "NA"
+    ],
+    [
+      null,
+      null,
+      "c.",
+      "Tersedia jadwal/program pelatihan untuk penjamah pangan",
+      "NA"
+    ],
+    [
+      null,
+      5,
+      "Melakukan pemeriksaan kesehatan secara berkala minimal 1 (satu) kali setahun",
+      null,
+      2
+    ],
+    [
+      null,
+      "E",
+      "Keselamatan, Kesehatan Kerja, dan lainnya"
+    ],
+    [
+      null,
+      1,
+      "Tersedia alat pemadam api ringan (APAR) gas yang mudah dijangkau untuk situasi darurat disertai dengan petunjuk penggunaan yang jelas",
+      null,
+      1
+    ],
+    [
+      null,
+      2,
+      "Tersedia personil yang bertanggung jawab dan dapat menggunakan APAR",
+      null,
+      1
+    ],
+    [
+      null,
+      3,
+      "APAR tidak kadaluwarsa",
+      null,
+      1
+    ],
+    [
+      null,
+      4,
+      "Tersedia perlengkapan P3K dan obat-obatan yang tidak kadaluwarsa",
+      null,
+      1
+    ],
+    [
+      null,
+      5,
+      "Tersedia petunjuk jalur evakuasi yang jelas pada setiap ruangan ke arah titik kumpul",
+      null,
+      1
+    ],
+    [
+      null,
+      6,
+      "Terdapat pos satpam di pintu masuk TPP dan dilakukan pengecekan terhadap karyawan dan visitor",
+      null,
+      1
+    ],
+    [
+      null,
+      7,
+      "Menerapkan kawasan tanpa rokok (KTR)",
+      null,
+      1
+    ],
+    [
+      null,
+      "Total Ketidaksesuaian"
+    ],
+    [
+      null,
+      "F",
+      "Catatan Lain"
+    ],
+    [],
+    [
+      null,
+      "Rumus Skor Total Inspeksi:"
+    ],
+    [
+      null,
+      null,
+      "Golongan A = 100 – ((Total ketidaksesuaian / 349) *100)"
+    ],
+    [
+      null,
+      null,
+      "Golongan B = 100 – ((Total ketidaksesuaian / 403) *100)",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      52
+    ],
+    [
+      null,
+      null,
+      "Golongan C = 100 – ((Total ketidaksesuaian / 407) *100)"
+    ],
+    [
+      null,
+      null,
+      "Skor Inspeksi : 100 - (16/410)*100 = 80,56"
+    ],
+    [],
+    [
+      null,
+      "Persyaratan Mendapatkan Sertifikat Laik Higiene",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      87.09677419354838
+    ],
+    [
+      null,
+      1,
+      "Hasil analisis pangan di laboratorium yang sudah terakreditasi KAN atau laboratorium yang ditetapkan Pemerintah Daerah. (catatan: jika hasil analisis dikeluarkan oleh laboratorium yang tidak sesuai ketentuan maka, hasil dianggap tidak sesuai dengan persyaratan)"
+    ],
+    [
+      null,
+      null,
+      "a.",
+      "Hasil E. coli untuk sampel air minum memenuhi persyaratan"
+    ],
+    [
+      null,
+      null,
+      "b.",
+      "Hasil E. coli untuk sampel makanan memenuhi persyaratan"
+    ]
+  ],
+  "Sheet1": []
+}

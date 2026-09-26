@@ -1,0 +1,6 @@
+{
+  "name": "Pre & Post Test Platform",
+  "description": "An application for administering pre-tests and post-tests, featuring question management for admins and a leaderboard for participants. Admins can manually create questions or import them via CSV.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}
